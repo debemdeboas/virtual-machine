@@ -497,7 +497,12 @@ class Command_SWAP(BaseCommand):
         self.r1.value, self.r2.value = self.r2.value, self.r1.value
 
 
-# noinspection SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection
+# noinspection SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
+# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
+# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
+# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
+# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
+# SpellCheckingInspection
 REGEX_FORMATS = {
     'DATA': r'',
     '___': r'',
@@ -532,7 +537,14 @@ REGEX_FORMATS = {
 CommandInformation = namedtuple(
     'CommandInformation', ['opcode', 'regex_validator', 'classname'])
 
-# noinspection SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection
+# noinspection SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
+# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
+# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
+# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
+# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
+# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
+# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
+# SpellCheckingInspection,SpellCheckingInspection
 INFO = {
     'DATA': CommandInformation('DATA', r'', Command_DATA),
     '____': CommandInformation('____', r'', Command_EMPTY),
