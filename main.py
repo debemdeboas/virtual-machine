@@ -7,9 +7,20 @@
 
 from __future__ import annotations
 
+import pathlib
+import tkinter as tk
+
 from virtual_machine import VirtualMachine
 
-vm = VirtualMachine()
+root = tk.Tk()
+root.resizable(False, False)
+# text = tk.Text(root, width=120, height=80)
+text = None
+
+vm = VirtualMachine(mem_size=512, tk=text)
+vm.load_from_file(pathlib.Path('example_programs/p2.asm'))
 vm.start()
 
+if text:
+    root.mainloop()
 vm.join()
