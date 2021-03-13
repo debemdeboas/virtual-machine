@@ -3,8 +3,8 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from tkinter import Text
 
-from memory import IMemory
 from cpu import ICpu
+from memory import IMemory
 
 
 class IVirtualMachine(ABC, threading.Thread):
@@ -20,8 +20,7 @@ class IVirtualMachine(ABC, threading.Thread):
     def cpu(self) -> ICpu: ...
 
     @abstractmethod
-    def dump(self): ...
-
+    def dump(self, e: Exception = None): ...
 
 
 class VirtualMachine(IVirtualMachine):
@@ -41,4 +40,4 @@ class VirtualMachine(IVirtualMachine):
 
     def run(self) -> None: ...
 
-    def dump(self) -> None: ...
+    def dump(self, e: Exception = None) -> None: ...

@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
-from command import to_word
-from collections import deque
+from command import to_word, EInvalidAddress
 
 
 class IMemory(ABC):
@@ -45,11 +44,14 @@ class Memory(IMemory):
         if 0 <= address < len(self._inner_memory):
             return self._inner_memory[address]
         else:
-            return to_word('STOP "Index out of bounds"')
+            raise EInvalidAddress('Index out of bounds')
 
     def save(self, command, address=None):
-        if address is not None:
-            self._inner_memory[address] = command
-        else:
-            self._inner_memory[self._pos] = command
-            self._pos += 1
+        try:
+            if address is not None:
+                self._inner_memory[address] = command
+            else:
+                self._inner_memory[self._pos] = command
+                self._pos += 1
+        except IndexError as E:
+            raise EInvalidAddress(str(E))

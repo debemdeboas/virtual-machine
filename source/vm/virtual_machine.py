@@ -1,9 +1,10 @@
 import threading
+import time
+import tkinter
 from abc import ABC, abstractmethod
 from pathlib import Path
+
 from pyfiglet import figlet_format
-import tkinter
-import time
 
 from command import to_word
 from cpu import Cpu
@@ -29,7 +30,7 @@ class IVirtualMachine(ABC, threading.Thread):
     def cpu(self): ...
 
     @abstractmethod
-    def dump(self): ...
+    def dump(self, e=None): ...
 
 
 class VirtualMachine(IVirtualMachine):
@@ -58,10 +59,12 @@ class VirtualMachine(IVirtualMachine):
             self.tk.bind('<Key>', lambda _: 'break')
 
     @property
-    def memory(self): return self._memory
+    def memory(self):
+        return self._memory
 
     @property
-    def cpu(self): return self._cpu
+    def cpu(self):
+        return self._cpu
 
     def load_from_file(self, file: Path):
         with open(file, 'r') as f:
@@ -74,7 +77,7 @@ class VirtualMachine(IVirtualMachine):
         """
         self._cpu.loop()
 
-    def dump(self):
+    def dump(self, e=None):
         if self.tk is not None:
             self.tk.delete('1.0', tkinter.END)
             for line in self.cpu.dump_list():
@@ -94,6 +97,8 @@ class VirtualMachine(IVirtualMachine):
             f.write(figlet_format('Memory Dump', font='cyberlarge', width=120))
             f.write(figlet_format('----------', font='cybermedium', width=120))
             f.write(figlet_format('CPU', font='cybermedium', width=120))
+            if e:
+                f.write(f'---- Interruption----\n{e.__class__.__name__}: {e}\n')
             # Dump CPU information
             self.cpu.dump(f)
             f.write('\n')
@@ -101,4 +106,3 @@ class VirtualMachine(IVirtualMachine):
             f.write(figlet_format('Memory', font='cybermedium', width=120))
             # Dump memory
             self.memory.dump(f)
-

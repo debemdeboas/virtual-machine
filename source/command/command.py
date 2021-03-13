@@ -23,11 +23,19 @@ class EInvalidCommand(Exception):
     pass
 
 
-class EInterrupt(Exception):
+class ETrap(Exception):
     pass
 
 
-class ETrap(Exception):
+class EInvalidAddress(Exception):
+    pass
+
+
+class EProgramEnd(Exception):
+    pass
+
+
+class EMathOverflowError(OverflowError):
     pass
 
 
@@ -239,8 +247,8 @@ class Command_JMPIM(BaseCommand):
         word = self.mem.access(self.p)
         if isinstance(word, Command_DATA):
             self.pc.value = word.execute()
-        else:  # TODO: Add memory area for exceptions
-            raise EInterrupt
+        else:
+            raise EInvalidCommand(f'Address {self.p} does not contain any DATA')
 
 
 class Command_JMPIGM(BaseCommand):
@@ -269,8 +277,8 @@ class Command_JMPIGM(BaseCommand):
             word = self.mem.access(self.p)
             if isinstance(word, Command_DATA):
                 self.pc.value = word.execute()
-            else:  # TODO: Add memory area for exceptions
-                raise EInterrupt
+            else:
+                raise EInvalidCommand(f'Address {self.p} does not contain any DATA')
         else:
             self.pc.value += 1
 
@@ -301,8 +309,8 @@ class Command_JMPILM(BaseCommand):
             word = self.mem.access(self.p)
             if isinstance(word, Command_DATA):
                 self.pc.value = word.execute()
-            else:  # TODO: Add memory area for exceptions
-                raise EInterrupt
+            else:
+                raise EInvalidCommand(f'Address {self.p} does not contain any DATA')
         else:
             self.pc.value += 1
 
@@ -333,8 +341,8 @@ class Command_JMPIEM(BaseCommand):
             word = self.mem.access(self.p)
             if isinstance(word, Command_DATA):
                 self.pc.value = word.execute()
-            else:  # TODO: Add memory area for exceptions
-                raise EInterrupt
+            else:
+                raise EInvalidCommand(f'Address {self.p} does not contain any DATA')
         else:
             self.pc.value += 1
 
@@ -350,7 +358,7 @@ class Command_STOP(BaseCommand):
         super().__init__('STOP', *args)
 
     def execute(self):
-        raise EInterrupt
+        raise EProgramEnd
 
 
 class Command_ADDI(BaseCommand):
@@ -489,8 +497,8 @@ class Command_LDD(BaseCommand):
     def execute(self):
         if isinstance((word := self.mem.access(self.p)), Command_DATA):
             self.r1.value = word.execute()
-        else:  # TODO: Add memory area for exceptions
-            raise EInterrupt
+        else:
+            raise EInvalidCommand(f'Address {self.p} does not contain any DATA')
 
 
 class Command_STD(BaseCommand):
@@ -531,8 +539,8 @@ class Command_LDX(BaseCommand):
         word = self.mem.access(self.r2.value)
         if isinstance(word, Command_DATA):
             self.r1.value = word.execute()
-        else:  # TODO: Add memory area for exceptions
-            raise EInterrupt
+        else:
+            raise EInvalidCommand(f'Address {self.p} does not contain any DATA')
 
 
 class Command_STX(BaseCommand):
