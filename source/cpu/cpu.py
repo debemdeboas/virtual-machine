@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
+from command import EInvalidCommand, ETrap, EInvalidAddress, EProgramEnd, EMathOverflowError
 from register import Register
-from command import ETrap, EInterrupt
 
 
 class ICpu(ABC):
@@ -39,10 +39,12 @@ class Cpu(ICpu):
         self.__instruction_register = None
 
     @property
-    def pc(self): return self.__program_counter
+    def pc(self):
+        return self.__program_counter
 
     @property
-    def ir(self): return self.__instruction_register
+    def ir(self):
+        return self.__instruction_register
 
     @property
     def command_params(self):
@@ -68,11 +70,23 @@ class Cpu(ICpu):
             # Execute the command
             try:
                 self.__instruction_register.execute()
-            except EInterrupt:
-                self.owner.dump()
+            except EInvalidCommand as E:
+                self.owner.dump(E)
                 break
-            except ETrap:
-                self.owner.dump()
+            except EInvalidAddress as E:
+                self.owner.dump(E)
+                break
+            except EProgramEnd as E:
+                self.owner.dump(E)
+                break
+            except (EMathOverflowError, OverflowError) as E:
+                self.owner.dump(E)
+                break
+            except ETrap as E:
+                self.owner.dump(E)
+                break
+            except Exception as E:
+                self.owner.dump(E)
                 break
 
             if self.pc.value == _curr_address:
