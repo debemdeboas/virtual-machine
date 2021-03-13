@@ -569,7 +569,7 @@ class Command_SWAP(BaseCommand):
     PARAMS = ['r1', 'r2']
 
     def __init__(self, *args):
-        super().__init__('STX', *args)
+        super().__init__('SWAP', *args)
 
     def execute(self):
         self.r1.value, self.r2.value = self.r2.value, self.r1.value
