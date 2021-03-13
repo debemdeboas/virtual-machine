@@ -236,7 +236,7 @@ class Command_JMPIM(BaseCommand):
         super().__init__('JMPIM', *args)
 
     def execute(self):
-        word = to_word(self.mem.access(self.p))
+        word = self.mem.access(self.p)
         if isinstance(word, Command_DATA):
             self.pc.value = word.execute()
         else:  # TODO: Add memory area for exceptions
@@ -266,7 +266,7 @@ class Command_JMPIGM(BaseCommand):
 
     def execute(self):
         if self.r2.value > 0:
-            word = to_word(self.mem.access(self.p))
+            word = self.mem.access(self.p)
             if isinstance(word, Command_DATA):
                 self.pc.value = word.execute()
             else:  # TODO: Add memory area for exceptions
@@ -298,7 +298,7 @@ class Command_JMPILM(BaseCommand):
 
     def execute(self):
         if self.r2.value < 0:
-            word = to_word(self.mem.access(self.p))
+            word = self.mem.access(self.p)
             if isinstance(word, Command_DATA):
                 self.pc.value = word.execute()
             else:  # TODO: Add memory area for exceptions
@@ -453,7 +453,7 @@ class Command_MULT(BaseCommand):
 
 
 class Command_LDI(BaseCommand):
-    """Immediate load from memory
+    """Immediate load
 
     Syntax:
         LDI R1, p
@@ -528,7 +528,7 @@ class Command_LDX(BaseCommand):
         super().__init__('LDX', *args)
 
     def execute(self):
-        word = to_word(self.mem.access(self.r2.value))
+        word = self.mem.access(self.r2.value)
         if isinstance(word, Command_DATA):
             self.r1.value = word.execute()
         else:  # TODO: Add memory area for exceptions
