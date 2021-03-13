@@ -12,5 +12,5 @@ University project.
 
 Most of the initial code was heavily inspired by the teacher's example, written in Java.
 The command structure is the same, albeit with different parameters and language-specific improvements
-(see [Command_SWAP](https://github.com/debemdeboas/virtual-machine/blob/b85251c46e8973682181b6869c9c7373f6b3a1ce/source/command/command.py#L481)).
+(see [Command_SWAP](https://github.com/debemdeboas/virtual-machine/blob/dd735828e7c6e094c83b4d22d44e92d083c323b9/source/command/command.py#L572)).
 
