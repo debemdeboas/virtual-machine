@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from register import Register
-from command import EInterrupt
+from command import ETrap, EInterrupt
 
 
 class ICpu(ABC):
@@ -68,8 +68,10 @@ class Cpu(ICpu):
             # Execute the command
             try:
                 self.__instruction_register.execute()
-            except EInterrupt:  # TODO: add EInterrupt
-                # Dump memory
+            except EInterrupt:
+                self.owner.dump()
+                break
+            except ETrap:
                 self.owner.dump()
                 break
 

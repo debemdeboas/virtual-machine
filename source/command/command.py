@@ -27,6 +27,10 @@ class EInterrupt(Exception):
     pass
 
 
+class ETrap(Exception):
+    pass
+
+
 class BaseCommand(IBaseCommand):
     PARAMS = []
 
