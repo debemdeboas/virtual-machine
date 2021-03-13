@@ -14,11 +14,11 @@ from virtual_machine import VirtualMachine
 
 root = tk.Tk()
 root.resizable(False, False)
-# text = tk.Text(root, width=120, height=80)
-text = None
+text = tk.Text(root, width=120, height=80)
+# text = None
 
 vm = VirtualMachine(mem_size=512, tk=text)
-vm.load_from_file(pathlib.Path('example_programs/p2.asm'))
+vm.load_from_file(pathlib.Path('example_programs/p3.asm'))
 vm.start()
 
 if text:
