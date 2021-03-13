@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Union
+from typing import Dict, Union, Any, TextIO, List
 
 from command import IBaseCommand
 from register import IRegister
@@ -21,9 +21,17 @@ class ICpu(ABC):
     @abstractmethod
     def loop(self): ...
 
+    @abstractmethod
+    def dump(self, file: TextIO): ...
+
+    @abstractmethod
+    def dump_list(self) -> List[str]: ...
+
 
 class Cpu(ICpu):
     owner: IVirtualMachine
+    registers: Dict[str, IRegister]
+
     __program_counter: IRegister
     __instruction_register: Union[IBaseCommand, None]
 
@@ -35,6 +43,11 @@ class Cpu(ICpu):
     @property
     def ir(self) -> IBaseCommand: ...
 
-    def command_params(self, r1: IRegister, r2: IRegister, p: IRegister): ...
+    @property
+    def command_params(self) -> Dict[str, Any]: ...
 
     def loop(self): ...
+
+    def dump(self, file: TextIO): ...
+
+    def dump_list(self) -> List[str]: ...

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, TextIO, Deque
 
 from command import IBaseCommand
 from virtual_machine import IVirtualMachine
@@ -10,7 +10,10 @@ class IMemory(ABC):
     def __init__(self, owner: IVirtualMachine, memory_length: int): ...
 
     @abstractmethod
-    def dump(self): ...
+    def dump(self, file: TextIO): ...
+
+    @abstractmethod
+    def dump_list(self) -> List[str]: ...
 
     @abstractmethod
     def access(self, address: int) -> IBaseCommand: ...
@@ -21,10 +24,14 @@ class IMemory(ABC):
 
 class Memory(IMemory):
     _inner_memory: List[IBaseCommand]
+    _length: int
+    _pos: int
 
     def __init__(self, owner: IVirtualMachine, memory_length: int): ...
 
-    def dump(self): ...
+    def dump(self, file: TextIO): ...
+
+    def dump_list(self) -> List[str]: ...
 
     def access(self, address: int) -> IBaseCommand: ...
 

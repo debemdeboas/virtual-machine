@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import List
 
 from register import Register
+from command import EInterrupt
 
 
 class ICpu(ABC):
@@ -19,46 +19,70 @@ class ICpu(ABC):
     @abstractmethod
     def loop(self): ...
 
+    @abstractmethod
+    def dump(self, file): ...
+
+    @abstractmethod
+    def dump_list(self): ...
+
 
 class Cpu(ICpu):
     # noinspection PyMissingConstructor
     def __init__(self, owner):
         self.owner = owner
 
-        self.__registers: List[Register] = []
-        for _ in range(8):
-            self.__registers.append(Register())
+        self.registers = {}
+        for i in range(9):
+            self.registers[f'r{i}'] = Register()
 
-        self.__program_counter = Register()
+        self.__program_counter = Register(0)
         self.__instruction_register = None
 
     @property
-    def pc(self):
-        return self.__program_counter
+    def pc(self): return self.__program_counter
 
     @property
-    def ir(self):
-        return self.__instruction_register
+    def ir(self): return self.__instruction_register
 
-    def command_params(self, r1: Register, r2: Register, p: Register):
+    @property
+    def command_params(self):
         return {
             'mem': self.owner.memory,
             'pc': self.__program_counter,
-            'r1': r1,
-            'r2': r2,
-            'p': p
+            'registers': self.registers
         }
 
     def loop(self):
+        print('CPU: Start loop')
         while True:
-            # Accesses the memory address stored in PC
+            # Access the memory address stored in PC
             _curr_address = self.pc.value
 
-            # Sets IR to the command pointed by PC
-            self.__instruction_register = self.owner.memory.access(_curr_address)
+            # Set IR to the command pointed by PC
+            self.__instruction_register = self.owner.memory.access(int(_curr_address))
+
+            self.__instruction_register.set_instance_params(**self.command_params)
+
+            self.owner.dump()
 
             # Execute the command
             try:
                 self.__instruction_register.execute()
-            except Exception:  # TODO: add EInterrupt
-                pass  # Treat interruption
+            except EInterrupt:  # TODO: add EInterrupt
+                # Dump memory
+                self.owner.dump()
+                break
+
+            if self.pc.value == _curr_address:
+                self.pc.value += 1
+        print('CPU: End')
+
+    def dump(self, file):
+        file.writelines(self.dump_list())
+
+    def dump_list(self):
+        res = ['---- Program counter ----\n', f'{self.__program_counter}\n', '---- Instruction register ----\n',
+               f'{self.__instruction_register.dump()}\n', '---- Registers ----\n']
+
+        [res.append(f'{k}: {v}\n') for k, v in self.registers.items()]
+        return res

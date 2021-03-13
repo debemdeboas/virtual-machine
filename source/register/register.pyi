@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+from typing import Any
 
 class IRegister(ABC):
     @abstractmethod
@@ -9,6 +9,10 @@ class IRegister(ABC):
     @abstractmethod
     def value(self) -> int: ...
 
+    @value.setter
+    @abstractmethod
+    def value(self, val: Any): ...
+
 
 class Register(IRegister):
     _value: int
@@ -17,3 +21,8 @@ class Register(IRegister):
 
     @property
     def value(self) -> int: ...
+
+    @value.setter
+    def value(self, val: Any): ...
+
+    def __str__(self) -> str: ...

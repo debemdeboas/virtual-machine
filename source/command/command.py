@@ -1,12 +1,13 @@
-# import re
+import re
 from abc import ABC, abstractmethod
 from collections import namedtuple
-from typing import Any, Dict
 
 
 class IBaseCommand(ABC):
+    original: str
+
     @abstractmethod
-    def __init__(self): ...
+    def __init__(self, opcode, **kwargs): ...
 
     @abstractmethod
     def dump(self): ...
@@ -14,37 +15,71 @@ class IBaseCommand(ABC):
     @abstractmethod
     def execute(self): ...
 
+    @abstractmethod
+    def set_instance_params(self, **kwargs): ...
+
 
 class EInvalidCommand(Exception):
     pass
 
 
-class BaseCommand(IBaseCommand):
-    # noinspection PyMissingConstructor
-    def __init__(self, opcode: str, **kwargs: Dict[str, Any]):
-        self.opcode = opcode
+class EInterrupt(Exception):
+    pass
 
+
+class BaseCommand(IBaseCommand):
+    PARAMS = []
+
+    # noinspection PyMissingConstructor
+    def __init__(self, opcode, *args):
+        self.opcode = opcode
+        self.original = f'{opcode} {args}'
+
+        parameters = dict(zip(self.PARAMS, map(lambda x: x, args)))
+
+        for key, value in parameters.items():
+            try:
+                self.__setattr__(key, int(value))
+            except (ValueError, TypeError):  # Could not convert value to int
+                self.__setattr__(key, value)
+
+    def dump(self):
+        res = f'{self.opcode}'
+        for i in self.PARAMS:
+            res += f' {i} : {self.__getattribute__(i)}'
+        return res
+
+    def execute(self):
+        raise NotImplementedError
+
+    def set_instance_params(self, **kwargs):
         for key, value in kwargs.items():
             self.__setattr__(key, value)
 
-    def dump(self) -> str:
-        return f'MEM: {self.mem} | PC: {self.pc} | {self.opcode} {self.r1.value} {self.r2.value} {self.p.value}\n'
+        try:
+            self.r1 = self.registers[self.r1.strip(',').lower()]
+        except:
+            pass
 
-    def execute(self) -> Any:
-        raise NotImplementedError
+        try:
+            self.r2 = self.registers[self.r2.strip(',').lower()]
+        except:
+            pass
 
 
 class Command_DATA(BaseCommand):
-    def __init__(self, **kwargs):
-        super().__init__('DATA', **kwargs)
+    PARAMS = ['p']
+
+    def __init__(self, *args):
+        super().__init__('DATA', *args)
 
     def execute(self) -> int:
-        return self.p.value
+        return self.p
 
 
 class Command_EMPTY(BaseCommand):
-    def __init__(self, **kwargs):
-        super().__init__('____', **kwargs)
+    def __init__(self, *args):
+        super().__init__('____', *args)
 
     def execute(self) -> int:
         return 0
@@ -60,11 +95,13 @@ class Command_JMP(BaseCommand):
         PC <- p
     """
 
-    def __init__(self, **kwargs):
-        super().__init__('JMP', **kwargs)
+    PARAMS = ['p']
+
+    def __init__(self, *args):
+        super().__init__('JMP', *args)
 
     def execute(self):
-        self.pc.value = self.p.value
+        self.pc.value = self.p
 
 
 class Command_JMPI(BaseCommand):
@@ -76,11 +113,13 @@ class Command_JMPI(BaseCommand):
 
         Micro-operation:
             PC <- R1
-        """
+    """
 
-    def __init__(self, **kwargs):
+    PARAMS = ['r1']
+
+    def __init__(self, *args):
         # noinspection SpellCheckingInspection
-        super().__init__('JMPI', **kwargs)
+        super().__init__('JMPI', *args)
 
     def execute(self):
         self.pc.value = self.r1.value
@@ -100,11 +139,13 @@ class Command_JMPIG(BaseCommand):
                 Then PC <- R1
                 Else PC <- PC + 1
 
-        """
+    """
 
-    def __init__(self, **kwargs):
+    PARAMS = ['r1', 'r2']
+
+    def __init__(self, *args):
         # noinspection SpellCheckingInspection
-        super().__init__('JMPIG', **kwargs)
+        super().__init__('JMPIG', *args)
 
     def execute(self):
         if self.r2.value > 0:
@@ -127,11 +168,13 @@ class Command_JMPIL(BaseCommand):
                 Then PC <- R1
                 Else PC <- PC + 1
 
-        """
+    """
 
-    def __init__(self, **kwargs):
+    PARAMS = ['r1', 'r2']
+
+    def __init__(self, *args):
         # noinspection SpellCheckingInspection
-        super().__init__('JMPIL', **kwargs)
+        super().__init__('JMPIL', *args)
 
     def execute(self):
         if self.r2.value < 0:
@@ -154,11 +197,13 @@ class Command_JMPIE(BaseCommand):
                 Then PC <- R1
                 Else PC <- PC + 1
 
-        """
+    """
 
-    def __init__(self, **kwargs):
+    PARAMS = ['r1', 'r2']
+
+    def __init__(self, *args):
         # noinspection SpellCheckingInspection
-        super().__init__('JMPIE', **kwargs)
+        super().__init__('JMPIE', *args)
 
     def execute(self):
         if self.r2.value == 0:
@@ -178,18 +223,20 @@ class Command_JMPIM(BaseCommand):
 
         Micro-operation:
             PC <- [P]
-        """
+    """
 
-    def __init__(self, **kwargs):
+    PARAMS = ['p']
+
+    def __init__(self, *args):
         # noinspection SpellCheckingInspection
-        super().__init__('JMPIM', **kwargs)
+        super().__init__('JMPIM', *args)
 
     def execute(self):
-        word = to_word(self.mem.access(self.p.value))
+        word = to_word(self.mem.access(self.p))
         if isinstance(word, Command_DATA):
             self.pc.value = word.execute()
         else:  # TODO: Add memory area for exceptions
-            self.pc.value = -1
+            raise EInterrupt
 
 
 class Command_JMPIGM(BaseCommand):
@@ -205,19 +252,21 @@ class Command_JMPIGM(BaseCommand):
             If R2 > 0
                 Then PC <- [P]
                 Else PC <- PC + 1
-        """
+    """
 
-    def __init__(self, **kwargs):
+    PARAMS = ['p', 'r2']
+
+    def __init__(self, *args):
         # noinspection SpellCheckingInspection
-        super().__init__('JMPIGM', **kwargs)
+        super().__init__('JMPIGM', *args)
 
     def execute(self):
         if self.r2.value > 0:
-            word = to_word(self.mem.access(self.p.value))
+            word = to_word(self.mem.access(self.p))
             if isinstance(word, Command_DATA):
                 self.pc.value = word.execute()
             else:  # TODO: Add memory area for exceptions
-                self.pc.value = -1
+                raise EInterrupt
         else:
             self.pc.value += 1
 
@@ -235,19 +284,21 @@ class Command_JMPILM(BaseCommand):
             If R2 < 0
                 Then PC <- [P]
                 Else PC <- PC + 1
-        """
+    """
 
-    def __init__(self, **kwargs):
+    PARAMS = ['p', 'r2']
+
+    def __init__(self, *args):
         # noinspection SpellCheckingInspection
-        super().__init__('JMPILM', **kwargs)
+        super().__init__('JMPILM', *args)
 
     def execute(self):
         if self.r2.value < 0:
-            word = to_word(self.mem.access(self.p.value))
+            word = to_word(self.mem.access(self.p))
             if isinstance(word, Command_DATA):
                 self.pc.value = word.execute()
             else:  # TODO: Add memory area for exceptions
-                self.pc.value = -1
+                raise EInterrupt
         else:
             self.pc.value += 1
 
@@ -265,19 +316,21 @@ class Command_JMPIEM(BaseCommand):
             If R2 = 0
                 Then PC <- [P]
                 Else PC <- PC + 1
-        """
+    """
 
-    def __init__(self, **kwargs):
+    PARAMS = ['p', 'r2']
+
+    def __init__(self, *args):
         # noinspection SpellCheckingInspection
-        super().__init__('JMPIEM', **kwargs)
+        super().__init__('JMPIEM', *args)
 
     def execute(self):
         if self.r2.value == 0:
-            word = to_word(self.mem.access(self.p.value))
+            word = self.mem.access(self.p)
             if isinstance(word, Command_DATA):
                 self.pc.value = word.execute()
             else:  # TODO: Add memory area for exceptions
-                self.pc.value = -1
+                raise EInterrupt
         else:
             self.pc.value += 1
 
@@ -289,11 +342,11 @@ class Command_STOP(BaseCommand):
         STOP
     """
 
-    def __init__(self, **kwargs):
-        super().__init__('STOP', **kwargs)
+    def __init__(self, *args):
+        super().__init__('STOP', *args)
 
     def execute(self):
-        self.pc.value = -1
+        raise EInterrupt
 
 
 class Command_ADDI(BaseCommand):
@@ -306,11 +359,13 @@ class Command_ADDI(BaseCommand):
         Rd <- R1 + p
     """
 
-    def __init__(self, **kwargs):
-        super().__init__('ADDI', **kwargs)
+    PARAMS = ['r1', 'p']
+
+    def __init__(self, *args):
+        super().__init__('ADDI', *args)
 
     def execute(self):
-        self.r1.value = self.r1.value + self.p.value
+        self.r1.value = self.r1.value + self.p
 
 
 class Command_SUBI(BaseCommand):
@@ -322,14 +377,16 @@ class Command_SUBI(BaseCommand):
 
         Micro-operation:
             Rd <- R1 - p
-        """
+    """
 
-    def __init__(self, **kwargs):
+    PARAMS = ['r1', 'p']
+
+    def __init__(self, *args):
         # noinspection SpellCheckingInspection
-        super().__init__('SUBI', **kwargs)
+        super().__init__('SUBI', *args)
 
     def execute(self):
-        self.r1.value = self.r1.value - self.p.value
+        self.r1.value = self.r1.value - self.p
 
 
 class Command_ADD(BaseCommand):
@@ -342,8 +399,10 @@ class Command_ADD(BaseCommand):
         Rd <- R1 + R2
     """
 
-    def __init__(self, **kwargs):
-        super().__init__('ADD', **kwargs)
+    PARAMS = ['r1', 'r2']
+
+    def __init__(self, *args):
+        super().__init__('ADD', *args)
 
     def execute(self):
         self.r1.value = self.r1.value + self.r2.value
@@ -359,8 +418,10 @@ class Command_SUB(BaseCommand):
         R1 <- R1 - R2
     """
 
-    def __init__(self, **kwargs):
-        super().__init__('SUB', **kwargs)
+    PARAMS = ['r1', 'r2']
+
+    def __init__(self, *args):
+        super().__init__('SUB', *args)
 
     def execute(self):
         self.r1.value = self.r1.value - self.r2.value
@@ -375,11 +436,13 @@ class Command_MULT(BaseCommand):
 
         Micro-operation:
             R1 <- R1 * R2
-        """
+    """
 
-    def __init__(self, **kwargs):
+    PARAMS = ['r1', 'r2']
+
+    def __init__(self, *args):
         # noinspection SpellCheckingInspection
-        super().__init__('MULT', **kwargs)
+        super().__init__('MULT', *args)
 
     def execute(self):
         self.r1.value = self.r1.value * self.r2.value
@@ -395,14 +458,16 @@ class Command_LDI(BaseCommand):
         R1 <- p
     """
 
-    def __init__(self, **kwargs):
-        super().__init__('LDI', **kwargs)
+    PARAMS = ['r1', 'p']
+
+    def __init__(self, *args):
+        super().__init__('LDI', *args)
 
     def execute(self):
-        self.r1.value = self.p.value
+        self.r1.value = self.p
 
 
-class Command_LDD(BaseCommand):  # FIXME: Loads the value stored in position P of the memory? Loads the command itself?
+class Command_LDD(BaseCommand):
     """Load from memory
 
     Syntax:
@@ -412,15 +477,16 @@ class Command_LDD(BaseCommand):  # FIXME: Loads the value stored in position P o
         R1 <- [P]
     """
 
-    def __init__(self, **kwargs):
-        super().__init__('LDD', **kwargs)
+    PARAMS = ['r1', 'p']
+
+    def __init__(self, *args):
+        super().__init__('LDD', *args)
 
     def execute(self):
-        word = to_word(self.mem.access(self.p.value))
-        if isinstance(word, Command_DATA):
+        if isinstance((word := self.mem.access(self.p)), Command_DATA):
             self.r1.value = word.execute()
         else:  # TODO: Add memory area for exceptions
-            self.r1.value = -1
+            raise EInterrupt
 
 
 class Command_STD(BaseCommand):
@@ -433,11 +499,13 @@ class Command_STD(BaseCommand):
         [P] <- R1
     """
 
-    def __init__(self, **kwargs):
-        super().__init__('STD', **kwargs)
+    PARAMS = ['p', 'r1']
+
+    def __init__(self, *args):
+        super().__init__('STD', *args)
 
     def execute(self):
-        self.mem.save(Command_DATA(p=self.r1.value), self.p.value)
+        self.mem.save(to_word(f'DATA {self.r1.value}\n'), self.p)
 
 
 class Command_LDX(BaseCommand):
@@ -450,15 +518,17 @@ class Command_LDX(BaseCommand):
         R1 <- [R2]
     """
 
-    def __init__(self, **kwargs):
-        super().__init__('LDX', **kwargs)
+    PARAMS = ['r1', 'r2']
+
+    def __init__(self, *args):
+        super().__init__('LDX', *args)
 
     def execute(self):
         word = to_word(self.mem.access(self.r2.value))
         if isinstance(word, Command_DATA):
             self.r1.value = word.execute()
         else:  # TODO: Add memory area for exceptions
-            self.r1.value = -1
+            raise EInterrupt
 
 
 class Command_STX(BaseCommand):
@@ -471,11 +541,13 @@ class Command_STX(BaseCommand):
         [R1] <- R2
     """
 
-    def __init__(self, **kwargs):
-        super().__init__('STX', **kwargs)
+    PARAMS = ['r1', 'r2']
+
+    def __init__(self, *args):
+        super().__init__('STX', *args)
 
     def execute(self):
-        self.mem.save(Command_DATA(p=self.r2.value), self.r1.value)
+        self.mem.save(to_word(f'DATA {self.r2.value}\n'), self.r1.value)
 
 
 class Command_SWAP(BaseCommand):
@@ -490,48 +562,14 @@ class Command_SWAP(BaseCommand):
         R2 <- T
     """
 
-    def __init__(self, **kwargs):
-        super().__init__('STX', **kwargs)
+    PARAMS = ['r1', 'r2']
+
+    def __init__(self, *args):
+        super().__init__('STX', *args)
 
     def execute(self):
         self.r1.value, self.r2.value = self.r2.value, self.r1.value
 
-
-# noinspection SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
-# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
-# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
-# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
-# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
-# SpellCheckingInspection
-REGEX_FORMATS = {
-    'DATA': r'',
-    '___': r'',
-    # Flow control:
-    'JMP': r'JMP\s(\d+)',
-    'JMPI': r'JMPI\s([R|r]\d+)',
-    'JMPIG': r'JMPIG\s([R|r]\d+),\s([R|r]\d+)',
-    'JMPIL': r'JMPIL\s([R|r]\d+),\s([R|r]\d+)',
-    'JMPIE': r'JMPIE\s([R|r]\d+),\s([R|r]\d+)',
-    'JMPIM': r'JMPIM\s(\[\d+\])',
-    'JMPIGM': r'JMPIGM\s(\[\d+\]),\s([R|r]\d+)',
-    'JMPILM': r'JMPILM\s(\[\d+\]),\s([R|r]\d+)',
-    'JMPIEM': r'JMPIEM\s(\[\d+\]),\s([R|r]\d+)',
-    # Halt:
-    'STOP': r'',
-    # Mathmatical operations:
-    'ADDI': r'ADDI\s([R|r]\d+),\s(\d+)',
-    'SUBI': r'SUBI\s([R|r]\d+),\s(\d+)',
-    'ADD': r'ADD\s([R|r]\d+),\s([R|r]\d+)',
-    'SUB': r'SUB\s([R|r]\d+),\s([R|r]\d+)',
-    'MULT': r'MULT\s([R|r]\d+),\s([R|r]\d+)',
-    # Data (register) manipulation:
-    'LDI': r'LDI\s([R|r]\d+),\s(\d+)',
-    'LDD': r'LDD\s([R|r]\d+),\s\([\d+\])',
-    'STD': r'STD\s(\[\d+\]),\s([R|r]\d+)',
-    'LDX': r'LDX\s([R|r]\d+),\s\[([R|r]\d+)\]',
-    'STX': r'STX\s\[([R|r]\d+)\],\s([R|r]\d+)',
-    'SWAP': r'SWAP\s([R|r]\d+),\s([R|r]\d+)',
-}
 
 # noinspection SpellCheckingInspection
 CommandInformation = namedtuple(
@@ -546,38 +584,48 @@ CommandInformation = namedtuple(
 # SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
 # SpellCheckingInspection,SpellCheckingInspection
 INFO = {
-    'DATA': CommandInformation('DATA', r'', Command_DATA),
-    '____': CommandInformation('____', r'', Command_EMPTY),
+    'DATA': CommandInformation('DATA', r'DATA\s(-?\d+)', Command_DATA),
+    '____': CommandInformation('____', r'____', Command_EMPTY),
     # Flow control:
-    'JMP': CommandInformation('JMP', r'JMP\s(\d+)', Command_JMP),
+    'JMP': CommandInformation('JMP', r'JMP\s(-?\d+)', Command_JMP),
     'JMPI': CommandInformation('JMPI', r'JMPI\s([R|r]\d+)', Command_JMPI),
     'JMPIG': CommandInformation('JMPIG', r'JMPIG\s([R|r]\d+),\s([R|r]\d+)', Command_JMPIG),
     'JMPIL': CommandInformation('JMPIL', r'JMPIL\s([R|r]\d+),\s([R|r]\d+)', Command_JMPIL),
     'JMPIE': CommandInformation('JMPIE', r'JMPIE\s([R|r]\d+),\s([R|r]\d+)', Command_JMPIE),
-    'JMPIM': CommandInformation('JMPIM', r'JMPIM\s(\[\d+\])', Command_JMPIM),
-    'JMPIGM': CommandInformation('JMPIGM', r'JMPIGM\s(\[\d+\]),\s([R|r]\d+)', Command_JMPIGM),
-    'JMPILM': CommandInformation('JMPILM', r'JMPILM\s(\[\d+\]),\s([R|r]\d+)', Command_JMPILM),
-    'JMPIEM': CommandInformation('JMPIEM', r'JMPIEM\s(\[\d+\]),\s([R|r]\d+)', Command_JMPIEM),
+    'JMPIM': CommandInformation('JMPIM', r'JMPIM\s\[(\d+)\]', Command_JMPIM),
+    'JMPIGM': CommandInformation('JMPIGM', r'JMPIGM\s\[(\d+)\],\s([R|r]\d+)', Command_JMPIGM),
+    'JMPILM': CommandInformation('JMPILM', r'JMPILM\s\[(\d+)\],\s([R|r]\d+)', Command_JMPILM),
+    'JMPIEM': CommandInformation('JMPIEM', r'JMPIEM\s\[(\d+)\],\s([R|r]\d+)', Command_JMPIEM),
     # Halt:
-    'STOP': CommandInformation('STOP', r'', Command_STOP),
+    'STOP': CommandInformation('STOP', r'STOP', Command_STOP),
     # Mathematical operations:
-    'ADDI': CommandInformation('ADDI', r'ADDI\s([R|r]\d+),\s(\d+)', Command_ADDI),
-    'SUBI': CommandInformation('SUBI', r'SUBI\s([R|r]\d+),\s(\d+)', Command_SUBI),
+    'ADDI': CommandInformation('ADDI', r'ADDI\s([R|r]\d+),\s(-?\d+)', Command_ADDI),
+    'SUBI': CommandInformation('SUBI', r'SUBI\s([R|r]\d+),\s(-?\d+)', Command_SUBI),
     'ADD': CommandInformation('ADD', r'ADD\s([R|r]\d+),\s([R|r]\d+)', Command_ADD),
     'SUB': CommandInformation('SUB', r'SUB\s([R|r]\d+),\s([R|r]\d+)', Command_SUB),
     'MULT': CommandInformation('MULT', r'MULT\s([R|r]\d+),\s([R|r]\d+)', Command_MULT),
     # Data (register) manipulation:
-    'LDI': CommandInformation('LDI', r'LDI\s([R|r]\d+),\s(\d+)', Command_LDI),
-    'LDD': CommandInformation('LDD', r'LDD\s([R|r]\d+),\s(\[\d+\])', Command_LDD),
-    'STD': CommandInformation('STD', r'STD\s(\[\d+\]),\s([R|r]\d+)', Command_STD),
+    'LDI': CommandInformation('LDI', r'LDI\s([R|r]\d+),\s(-?\d+)', Command_LDI),
+    'LDD': CommandInformation('LDD', r'LDD\s([R|r]\d+),\s\[(\d+)\]', Command_LDD),
+    'STD': CommandInformation('STD', r'STD\s\[(\d+)\],\s([R|r]\d+)', Command_STD),
     'LDX': CommandInformation('LDX', r'LDX\s([R|r]\d+),\s\[([R|r]\d+)\]', Command_LDX),
     'STX': CommandInformation('STX', r'STX\s\[([R|r]\d+)\],\s([R|r]\d+)', Command_STX),
     'SWAP': CommandInformation('SWAP', r'SWAP\s([R|r]\d+),\s([R|r]\d+)', Command_SWAP),
 }
 
 
-def to_word(val: str):
-    opcode, *params = val.split()
-    if (command := INFO.get(opcode, None)) is not None:
-        return command.classname(*params)
-    raise EInvalidCommand
+def to_word(val):
+    try:
+        opcode, *_ = val.split()
+    except ValueError:  # Empty line
+        opcode = val
+    if ((c_info := INFO.get(opcode, None)) is not None) and \
+            (match := re.match(c_info.regex_validator, val)):
+        curr: IBaseCommand = c_info.classname(*match.groups())
+        curr.original = val.rstrip('\n')
+        return curr
+    elif val.startswith('\n') or val.startswith(';'):
+        curr: IBaseCommand = Command_EMPTY()
+        curr.original = val.rstrip('\n')  # Either a comment (;) or a blank line
+        return curr
+    raise EInvalidCommand(f'Value \'{val.strip()}\' is not a valid command')
