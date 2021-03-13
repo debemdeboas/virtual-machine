@@ -32,7 +32,7 @@ class Cpu(ICpu):
         self.owner = owner
 
         self.registers = {}
-        for i in range(9):
+        for i in range(8):
             self.registers[f'r{i}'] = Register()
 
         self.__program_counter = Register(0)
