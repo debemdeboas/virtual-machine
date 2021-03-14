@@ -30,7 +30,7 @@ class IVirtualMachine(ABC, threading.Thread):
     def cpu(self): ...
 
     @abstractmethod
-    def dump(self, e=None): ...
+    def dump(self, e=None, to_file=True): ...
 
 
 class VirtualMachine(IVirtualMachine):
@@ -48,7 +48,9 @@ class VirtualMachine(IVirtualMachine):
 
         Args:
             mem_size (int): Total memory size
+            tk (Text): Tkinter Text object
         """
+
         threading.Thread.__init__(self, daemon=False)
 
         self._cpu = Cpu(self)
@@ -74,11 +76,20 @@ class VirtualMachine(IVirtualMachine):
                 self._memory.save(command, index)
 
     def run(self):
-        """Thread loop
         """
+        Thread loop
+        """
+
         self._cpu.loop()
 
-    def dump(self, e=None):
+    def dump(self, e=None, to_file=True):
+        """
+        Dump the CPU and Memory information to a file or to the TK Text() module
+
+        Args:
+            e (Exception): An interruption (Exception) thrown by a CPU command
+            to_file (bool): Flag specifying if the output should be saved to a file or not
+        """
         if self.tk is not None:
             self.tk.delete('1.0', tkinter.END)
             for line in self.cpu.dump_list():
@@ -96,17 +107,18 @@ class VirtualMachine(IVirtualMachine):
             self.tk.pack()
             time.sleep(0.5)
 
-        dump_file = Path('memory.dump')
-        with open(dump_file, 'w') as f:
-            f.write(figlet_format('Memory Dump', font='cyberlarge', width=120))
-            f.write(figlet_format('----------', font='cybermedium', width=120))
-            f.write(figlet_format('CPU', font='cybermedium', width=120))
-            if e:
-                f.write(f'---- Interruption----\n{e.__class__.__name__}: {e}\n')
-            # Dump CPU information
-            self.cpu.dump(f)
-            f.write('\n')
-            f.write(figlet_format('----------', font='cybermedium', width=120))
-            f.write(figlet_format('Memory', font='cybermedium', width=120))
-            # Dump memory
-            self.memory.dump(f)
+        if to_file:
+            dump_file = Path('memory.dump')
+            with open(dump_file, 'w') as f:
+                f.write(figlet_format('Memory Dump', font='cyberlarge', width=120))
+                f.write(figlet_format('----------', font='cybermedium', width=120))
+                f.write(figlet_format('CPU', font='cybermedium', width=120))
+                if e:
+                    f.write(f'---- Interruption----\n{e.__class__.__name__}: {e}\n')
+                # Dump CPU information
+                self.cpu.dump(f)
+                f.write('\n')
+                f.write(figlet_format('----------', font='cybermedium', width=120))
+                f.write(figlet_format('Memory', font='cybermedium', width=120))
+                # Dump memory
+                self.memory.dump(f)
