@@ -583,6 +583,63 @@ class Command_SWAP(BaseCommand):
         self.r1.value, self.r2.value = self.r2.value, self.r1.value
 
 
+class Command_TRAP(BaseCommand):
+    """Send a TRAP to the CPU
+
+    Make a system call encoded in R8 (see below).
+    R9 represents the TRAP's extra parameters.
+
+    System calls:
+
+    R8 = 1: IN
+        Read something from STDIO.
+        In this case, R9 represents the address in memory in which the value read from STDIO will be stored.
+
+    R8 = 2: OUT
+        Print something to STDIO.
+        In this case, R9 represents the address in memory in which the value to be printed is stored.
+
+    Syntax:
+        TRAP R8, R9
+    """
+
+    PARAMS = ['r1', 'r2']
+
+    def __init__(self, *args):
+        super().__init__('TRAP', *args)
+        self.func = None
+
+    def _sys_call_in(self):
+        """Mock a system call to the I/O handler
+
+        Equivalent to:
+         `scanf("%d", R8)` (not `&R8` because R8 already points to an address)
+        """
+        word = input()
+        self.mem.save(to_word(f'DATA {int(word)}'), self.r2.value)
+
+    def _sys_call_out(self):
+        """Mock a system call to the I/O handler
+
+        Equivalent to:
+         `printf("%d", *R8)` (not `R8` because it is a pointer to an address)
+        """
+        if isinstance((word := self.mem.access(self.r2.value)), Command_DATA):
+            print(word.execute())
+        else:
+            raise EInvalidCommand(f'Address {self.r2.value} does not contain any DATA')
+
+    def execute(self):
+        self.func = {
+            1: self._sys_call_in,
+            2: self._sys_call_out,
+        }[self.r1.value]
+        raise ETrap
+
+    def handle_trap(self):
+        self.func()
+
+
 # noinspection SpellCheckingInspection
 CommandInformation = namedtuple(
     'CommandInformation', ['opcode', 'regex_validator', 'classname'])
@@ -623,6 +680,7 @@ INFO = {
     'LDX': CommandInformation('LDX', r'LDX\s([R|r]\d+),\s\[([R|r]\d+)\]', Command_LDX),
     'STX': CommandInformation('STX', r'STX\s\[([R|r]\d+)\],\s([R|r]\d+)', Command_STX),
     'SWAP': CommandInformation('SWAP', r'SWAP\s([R|r]\d+),\s([R|r]\d+)', Command_SWAP),
+    'TRAP': CommandInformation('TRAP', r'TRAP\s([R|r]\d+),\s([R|r]\d+)', Command_TRAP),
 }
 
 

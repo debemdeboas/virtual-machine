@@ -40,6 +40,10 @@ class BaseCommand(IBaseCommand):
     def set_instance_params(self, **kwargs): ...
 
 
+class Command_TRAP(BaseCommand):
+    def handle_trap(self): ...
+
+
 def to_word(val: str) -> IBaseCommand: ...
 
 
