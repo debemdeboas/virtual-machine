@@ -63,9 +63,11 @@ class Cpu(ICpu):
             # Set IR to the command pointed by PC
             self.__instruction_register = self.owner.memory.access(int(_curr_address))
 
+            # Load the command instance with CPU registers, memory and PC
             self.__instruction_register.set_instance_params(**self.command_params)
 
-            self.owner.dump()
+            # Don't dump to disk to save on disk I/O time, only update the TK interface
+            self.owner.dump(to_file=False)
 
             # Execute the command
             try:
@@ -82,7 +84,7 @@ class Cpu(ICpu):
             except (EMathOverflowError, OverflowError) as E:
                 self.owner.dump(E)
                 break
-            except ETrap as E:
+            except ETrap:  # Handle traps raised by a command
                 if isinstance(self.__instruction_register, Command_TRAP):
                     self.__instruction_register.handle_trap()
             except Exception as E:
