@@ -56,6 +56,7 @@ class VirtualMachine(IVirtualMachine):
         self.tk = tk
         if self.tk is not None:
             self.tk.tag_configure('current_command', background='misty rose')
+            self.tk.tag_configure('exception_command', background='brown2')
             self.tk.bind('<Key>', lambda _: 'break')
 
     @property
@@ -85,7 +86,10 @@ class VirtualMachine(IVirtualMachine):
 
             for index, line in enumerate(self.memory.dump_list()):
                 if index == self.cpu.pc.value + 1:
-                    self.tk.insert(tkinter.END, line, 'current_command')
+                    if e:
+                        self.tk.insert(tkinter.END, line, 'exception_command')
+                    else:
+                        self.tk.insert(tkinter.END, line, 'current_command')
                     continue
                 self.tk.insert(tkinter.END, line)
 
