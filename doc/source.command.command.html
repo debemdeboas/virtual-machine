@@ -96,7 +96,11 @@
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#BaseCommand">BaseCommand</a>(opcode,&nbsp;*args)<br>
 &nbsp;<br>
-<br>&nbsp;</tt></td></tr>
+Base&nbsp;Command&nbsp;class<br>
+&nbsp;<br>
+Every&nbsp;command&nbsp;inherits&nbsp;from&nbsp;this&nbsp;class,&nbsp;implementing&nbsp;their&nbsp;own&nbsp;`<a href="#BaseCommand-execute">execute</a>()`&nbsp;methods.&nbsp;Each&nbsp;command&nbsp;has&nbsp;to&nbsp;call<br>
+`super()`&nbsp;upon&nbsp;construction&nbsp;to&nbsp;properly&nbsp;define&nbsp;its&nbsp;OPCODE.&nbsp;Objects&nbsp;created&nbsp;from&nbsp;this&nbsp;class&nbsp;and&nbsp;its&nbsp;children&nbsp;are<br>
+dynamically&nbsp;allocated&nbsp;and&nbsp;have&nbsp;dynamic&nbsp;parameters&nbsp;(see&nbsp;`<a href="#BaseCommand">BaseCommand</a>.<a href="#BaseCommand-__init__">__init__</a>()`,&nbsp;near&nbsp;`self.<a href="#BaseCommand-__setattr__">__setattr__</a>()`).<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="source.command.command.html#BaseCommand">BaseCommand</a></dd>
@@ -112,7 +116,10 @@ Methods defined here:<br>
 
 <dl><dt><a name="BaseCommand-execute"><strong>execute</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="BaseCommand-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="BaseCommand-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data and other attributes defined here:<br>
@@ -265,7 +272,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_ADD-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_ADD-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_ADD-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -319,7 +329,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_ADDI-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_ADDI-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_ADDI-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -367,7 +380,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_DATA-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_DATA-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_DATA-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -413,7 +429,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_EMPTY-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_EMPTY-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_EMPTY-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
@@ -471,7 +490,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_JMP-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_JMP-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_JMP-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -525,7 +547,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_JMPI-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_JMPI-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_JMPI-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -583,7 +608,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_JMPIE-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_JMPIE-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_JMPIE-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -641,7 +669,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_JMPIEM-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_JMPIEM-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_JMPIEM-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -699,7 +730,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_JMPIG-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_JMPIG-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_JMPIG-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -757,7 +791,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_JMPIGM-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_JMPIGM-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_JMPIGM-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -815,7 +852,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_JMPIL-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_JMPIL-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_JMPIL-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -873,7 +913,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_JMPILM-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_JMPILM-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_JMPILM-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -929,7 +972,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_JMPIM-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_JMPIM-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_JMPIM-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -983,7 +1029,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_LDD-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_LDD-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_LDD-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -1037,7 +1086,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_LDI-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_LDI-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_LDI-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -1091,7 +1143,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_LDX-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_LDX-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_LDX-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -1145,7 +1200,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_MULT-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_MULT-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_MULT-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -1199,7 +1257,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_STD-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_STD-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_STD-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -1248,7 +1309,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_STOP-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_STOP-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_STOP-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
@@ -1306,7 +1370,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_STX-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_STX-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_STX-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -1360,7 +1427,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_SUB-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_SUB-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_SUB-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -1414,7 +1484,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_SUBI-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_SUBI-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_SUBI-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -1470,7 +1543,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_SWAP-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_SWAP-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_SWAP-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -1536,7 +1612,10 @@ Data and other attributes defined here:<br>
 Methods inherited from <a href="source.command.command.html#BaseCommand">BaseCommand</a>:<br>
 <dl><dt><a name="Command_TRAP-dump"><strong>dump</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="Command_TRAP-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt></dl>
+<dl><dt><a name="Command_TRAP-set_instance_params"><strong>set_instance_params</strong></a>(self, **kwargs)</dt><dd><tt>Set&nbsp;this&nbsp;command&nbsp;instance's&nbsp;extra&nbsp;parameters,&nbsp;such&nbsp;as&nbsp;`memory`,&nbsp;`pc`&nbsp;and&nbsp;`registers`.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;**kwargs&nbsp;(Dict[str,&nbsp;Any]):&nbsp;Dictionary&nbsp;containing&nbsp;the&nbsp;extra&nbsp;parameters&nbsp;for&nbsp;this&nbsp;instance</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="source.command.command.html#IBaseCommand">IBaseCommand</a>:<br>
@@ -1556,7 +1635,11 @@ Data and other attributes inherited from <a href="source.command.command.html#IB
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="EInvalidAddress">class <strong>EInvalidAddress</strong></a>(<a href="builtins.html#Exception">builtins.Exception</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Invalid&nbsp;Address<br>
+&nbsp;<br>
+This&nbsp;interruption&nbsp;is&nbsp;thrown&nbsp;when&nbsp;the&nbsp;user&nbsp;program&nbsp;tries&nbsp;to&nbsp;access&nbsp;illegal&nbsp;positions&nbsp;in&nbsp;the&nbsp;memory.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="source.command.command.html#EInvalidAddress">EInvalidAddress</a></dd>
 <dd><a href="builtins.html#Exception">builtins.Exception</a></dd>
@@ -1617,7 +1700,11 @@ Data descriptors inherited from <a href="builtins.html#BaseException">builtins.B
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="EInvalidCommand">class <strong>EInvalidCommand</strong></a>(<a href="builtins.html#Exception">builtins.Exception</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Invalid&nbsp;Command<br>
+&nbsp;<br>
+This&nbsp;interruption&nbsp;is&nbsp;thrown&nbsp;when&nbsp;a&nbsp;command&nbsp;is&nbsp;illegally-formatted.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="source.command.command.html#EInvalidCommand">EInvalidCommand</a></dd>
 <dd><a href="builtins.html#Exception">builtins.Exception</a></dd>
@@ -1678,7 +1765,11 @@ Data descriptors inherited from <a href="builtins.html#BaseException">builtins.B
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="EMathOverflowError">class <strong>EMathOverflowError</strong></a>(<a href="builtins.html#OverflowError">builtins.OverflowError</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Math&nbsp;Overflow&nbsp;Error<br>
+&nbsp;<br>
+This&nbsp;interruption&nbsp;is&nbsp;thrown&nbsp;when&nbsp;there&nbsp;is&nbsp;an&nbsp;overflow&nbsp;during&nbsp;a&nbsp;mathematical&nbsp;operation.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="source.command.command.html#EMathOverflowError">EMathOverflowError</a></dd>
 <dd><a href="builtins.html#OverflowError">builtins.OverflowError</a></dd>
@@ -1741,7 +1832,11 @@ Data descriptors inherited from <a href="builtins.html#BaseException">builtins.B
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="EProgramEnd">class <strong>EProgramEnd</strong></a>(<a href="builtins.html#Exception">builtins.Exception</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Program&nbsp;End<br>
+&nbsp;<br>
+This&nbsp;interruption&nbsp;is&nbsp;thrown&nbsp;upon&nbsp;reaching&nbsp;a&nbsp;`STOP`&nbsp;command.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="source.command.command.html#EProgramEnd">EProgramEnd</a></dd>
 <dd><a href="builtins.html#Exception">builtins.Exception</a></dd>
@@ -1802,7 +1897,11 @@ Data descriptors inherited from <a href="builtins.html#BaseException">builtins.B
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="ETrap">class <strong>ETrap</strong></a>(<a href="builtins.html#Exception">builtins.Exception</a>)</font></td></tr>
     
-<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Trap<br>
+&nbsp;<br>
+This&nbsp;interruption&nbsp;is&nbsp;thrown&nbsp;when&nbsp;there&nbsp;is&nbsp;a&nbsp;system&nbsp;call&nbsp;being&nbsp;made&nbsp;by&nbsp;the&nbsp;user.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="source.command.command.html#ETrap">ETrap</a></dd>
 <dd><a href="builtins.html#Exception">builtins.Exception</a></dd>
@@ -1866,7 +1965,10 @@ Data descriptors inherited from <a href="builtins.html#BaseException">builtins.B
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt><a href="#IBaseCommand">IBaseCommand</a>(opcode,&nbsp;**kwargs)<br>
 &nbsp;<br>
-<br>&nbsp;</tt></td></tr>
+Base&nbsp;Command&nbsp;interface<br>
+&nbsp;<br>
+This&nbsp;class&nbsp;is&nbsp;an&nbsp;interface&nbsp;to&nbsp;any&nbsp;commands&nbsp;that&nbsp;inherit&nbsp;from&nbsp;the&nbsp;<a href="#BaseCommand">BaseCommand</a>&nbsp;class&nbsp;(that&nbsp;implements&nbsp;this&nbsp;class).<br>
+This&nbsp;was&nbsp;created&nbsp;to&nbsp;avoid&nbsp;circular&nbsp;importing&nbsp;throughout&nbsp;the&nbsp;modules.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="source.command.command.html#IBaseCommand">IBaseCommand</a></dd>
@@ -1904,7 +2006,13 @@ Data and other attributes defined here:<br>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
     
 <tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><dl><dt><a name="-to_word"><strong>to_word</strong></a>(val)</dt></dl>
+<td width="100%"><dl><dt><a name="-to_word"><strong>to_word</strong></a>(val)</dt><dd><tt>Convert&nbsp;a&nbsp;`str`&nbsp;value&nbsp;to&nbsp;a&nbsp;<a href="#BaseCommand">BaseCommand</a>-derived&nbsp;class.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;val&nbsp;(str):&nbsp;Line&nbsp;to&nbsp;be&nbsp;converted<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#IBaseCommand">IBaseCommand</a>:&nbsp;The&nbsp;command&nbsp;object</tt></dd></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">

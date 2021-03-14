@@ -74,7 +74,7 @@ Implemented&nbsp;by&nbsp;the&nbsp;`<a href="#VirtualMachine">VirtualMachine</a>`
 Methods defined here:<br>
 <dl><dt><a name="IVirtualMachine-__init__"><strong>__init__</strong></a>(self, mem_size)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="IVirtualMachine-dump"><strong>dump</strong></a>(self, e=None)</dt></dl>
+<dl><dt><a name="IVirtualMachine-dump"><strong>dump</strong></a>(self, e=None, to_file=True)</dt></dl>
 
 <hr>
 Readonly properties defined here:<br>
@@ -210,9 +210,14 @@ Methods defined here:<br>
 Creates&nbsp;both&nbsp;a&nbsp;CPU&nbsp;object&nbsp;and&nbsp;a&nbsp;Memory&nbsp;object&nbsp;as&nbsp;well.<br>
 &nbsp;<br>
 Args:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;mem_size&nbsp;(int):&nbsp;Total&nbsp;memory&nbsp;size</tt></dd></dl>
+&nbsp;&nbsp;&nbsp;&nbsp;mem_size&nbsp;(int):&nbsp;Total&nbsp;memory&nbsp;size<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tk&nbsp;(Text):&nbsp;Tkinter&nbsp;Text&nbsp;object</tt></dd></dl>
 
-<dl><dt><a name="VirtualMachine-dump"><strong>dump</strong></a>(self, e=None)</dt></dl>
+<dl><dt><a name="VirtualMachine-dump"><strong>dump</strong></a>(self, e=None, to_file=True)</dt><dd><tt>Dump&nbsp;the&nbsp;CPU&nbsp;and&nbsp;Memory&nbsp;information&nbsp;to&nbsp;a&nbsp;file&nbsp;or&nbsp;to&nbsp;the&nbsp;TK&nbsp;Text()&nbsp;module<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;e&nbsp;(Exception):&nbsp;An&nbsp;interruption&nbsp;(Exception)&nbsp;thrown&nbsp;by&nbsp;a&nbsp;CPU&nbsp;command<br>
+&nbsp;&nbsp;&nbsp;&nbsp;to_file&nbsp;(bool):&nbsp;Flag&nbsp;specifying&nbsp;if&nbsp;the&nbsp;output&nbsp;should&nbsp;be&nbsp;saved&nbsp;to&nbsp;a&nbsp;file&nbsp;or&nbsp;not</tt></dd></dl>
 
 <dl><dt><a name="VirtualMachine-load_from_file"><strong>load_from_file</strong></a>(self, file: pathlib.Path)</dt></dl>
 
