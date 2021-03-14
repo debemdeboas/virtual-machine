@@ -4,6 +4,13 @@ from collections import namedtuple
 
 
 class IBaseCommand(ABC):
+    """
+    Base Command interface
+
+    This class is an interface to any commands that inherit from the BaseCommand class (that implements this class).
+    This was created to avoid circular importing throughout the modules.
+    """
+
     original: str
 
     @abstractmethod
@@ -20,27 +27,60 @@ class IBaseCommand(ABC):
 
 
 class EInvalidCommand(Exception):
+    """
+    Invalid Command
+
+    This interruption is thrown when a command is illegally-formatted.
+    """
     pass
 
 
 class ETrap(Exception):
+    """
+    Trap
+
+    This interruption is thrown when there is a system call being made by the user.
+    """
     pass
 
 
 class EInvalidAddress(Exception):
+    """
+    Invalid Address
+
+    This interruption is thrown when the user program tries to access illegal positions in the memory.
+    """
     pass
 
 
 class EProgramEnd(Exception):
+    """
+    Program End
+
+    This interruption is thrown upon reaching a `STOP` command.
+    """
     pass
 
 
 class EMathOverflowError(OverflowError):
+    """
+    Math Overflow Error
+
+    This interruption is thrown when there is an overflow during a mathematical operation.
+    """
     pass
 
 
 class BaseCommand(IBaseCommand):
-    PARAMS = []
+    """
+    Base Command class
+
+    Every command inherits from this class, implementing their own `execute()` methods. Each command has to call
+    `super()` upon construction to properly define its OPCODE. Objects created from this class and its children are
+    dynamically allocated and have dynamic parameters (see `BaseCommand.__init__()`, near `self.__setattr__()`).
+    """
+
+    PARAMS = []  # Parameters defined here will become instance attributes (accessed as `<object>.<parameter>`).
 
     # noinspection PyMissingConstructor
     def __init__(self, opcode, *args):
@@ -52,7 +92,7 @@ class BaseCommand(IBaseCommand):
         for key, value in parameters.items():
             try:
                 self.__setattr__(key, int(value))
-            except (ValueError, TypeError):  # Could not convert value to int
+            except (ValueError, TypeError):  # Could not convert value to (int)
                 self.__setattr__(key, value)
 
     def dump(self):
@@ -65,16 +105,27 @@ class BaseCommand(IBaseCommand):
         raise NotImplementedError
 
     def set_instance_params(self, **kwargs):
+        """
+        Set this command instance's extra parameters, such as `memory`, `pc` and `registers`.
+
+        Args:
+            **kwargs (Dict[str, Any]): Dictionary containing the extra parameters for this instance
+        """
+
         for key, value in kwargs.items():
             self.__setattr__(key, value)
 
         try:
             self.r1 = self.registers[self.r1.strip(',').lower()]
+        except KeyError as E:
+            raise EInvalidCommand(f'Register {self.r1.strip(",")} is not a valid register value')
         except:
             pass
 
         try:
             self.r2 = self.registers[self.r2.strip(',').lower()]
+        except KeyError as E:
+            raise EInvalidCommand(f'Register {self.r2.strip(",")} is not a valid register value')
         except:
             pass
 
@@ -680,11 +731,24 @@ INFO = {
     'LDX': CommandInformation('LDX', r'LDX\s([R|r]\d+),\s\[([R|r]\d+)\]', Command_LDX),
     'STX': CommandInformation('STX', r'STX\s\[([R|r]\d+)\],\s([R|r]\d+)', Command_STX),
     'SWAP': CommandInformation('SWAP', r'SWAP\s([R|r]\d+),\s([R|r]\d+)', Command_SWAP),
-    'TRAP': CommandInformation('TRAP', r'TRAP\s([R|r]\d+),\s([R|r]\d+)', Command_TRAP),
+    # Traps:
+    # 'TRAP': CommandInformation('TRAP', r'TRAP\s([R|r]\d+),\s([R|r]\d+)', Command_TRAP),
+    # TRAP commands should not accept any registers besides R8 and R9 (see definition in `Command_TRAP`)
+    'TRAP': CommandInformation('TRAP', r'TRAP\s([R|r]8),\s([R|r]9)', Command_TRAP),
 }
 
 
 def to_word(val):
+    """
+    Convert a `str` value to a BaseCommand-derived class.
+
+    Args:
+        val (str): Line to be converted
+
+    Returns:
+        IBaseCommand: The command object
+    """
+
     try:
         opcode, *_ = val.split()
     except ValueError:  # Empty line
