@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from command import EInvalidCommand, ETrap, EInvalidAddress, EProgramEnd, EMathOverflowError
+from command import EInvalidCommand, ETrap, EInvalidAddress, EProgramEnd, EMathOverflowError, Command_TRAP
 from register import Register
 
 
@@ -32,7 +32,7 @@ class Cpu(ICpu):
         self.owner = owner
 
         self.registers = {}
-        for i in range(8):
+        for i in range(10):
             self.registers[f'r{i}'] = Register()
 
         self.__program_counter = Register(0)
@@ -83,8 +83,8 @@ class Cpu(ICpu):
                 self.owner.dump(E)
                 break
             except ETrap as E:
-                self.owner.dump(E)
-                break
+                if isinstance(self.__instruction_register, Command_TRAP):
+                    self.__instruction_register.handle_trap()
             except Exception as E:
                 self.owner.dump(E)
                 break
