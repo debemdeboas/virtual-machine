@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from command import EInvalidCommand, ETrap, EInvalidAddress, EProgramEnd, EMathOverflowError, Command_TRAP
-from register import Register
+from source.command.command import EInvalidCommand, ETrap, EInvalidAddress, EProgramEnd, EMathOverflowError, Command_TRAP
+from source.register.register import Register
 
 
 class ICpu(ABC):

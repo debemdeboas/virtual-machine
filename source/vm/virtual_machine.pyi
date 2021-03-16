@@ -3,8 +3,8 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from tkinter import Text
 
-from cpu import ICpu
-from memory import IMemory
+from source.cpu.cpu import ICpu
+from source.memory.memory import IMemory
 
 
 class IVirtualMachine(ABC, threading.Thread):

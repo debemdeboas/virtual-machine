@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from command import to_word, EInvalidAddress
+from source.command.command import to_word, EInvalidAddress
 
 
 class IMemory(ABC):

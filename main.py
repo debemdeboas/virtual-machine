@@ -20,7 +20,7 @@ except:
     file = 'example_programs/p2.asm'
 
 root = tk.Tk()
-root.protocol('WM_DELETE_WINDOW', lambda: (root.quit(), root.destroy()))
+root.protocol('WM_DELETE_WINDOW', lambda: (root.quit(), root.destroy(), vm.join(timeout=0.1)))
 root.resizable(False, False)
 text = tk.Text(root, width=120, height=80)
 # text = None
@@ -31,4 +31,4 @@ vm.start()
 
 if text:
     root.mainloop()
-vm.join()
+vm.join(timeout=10)

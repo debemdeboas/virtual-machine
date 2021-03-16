@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List, TextIO, Deque
 
-from command import IBaseCommand
-from virtual_machine import IVirtualMachine
+from source.command.command import IBaseCommand
+from source.vm.virtual_machine import IVirtualMachine
 
 
 class IMemory(ABC):

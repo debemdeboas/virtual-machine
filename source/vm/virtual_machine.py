@@ -6,9 +6,9 @@ from pathlib import Path
 
 from pyfiglet import figlet_format
 
-from command import to_word
-from cpu import Cpu
-from memory import Memory
+from source.command.command import to_word
+from source.cpu.cpu import Cpu
+from source.memory.memory import Memory
 
 
 class IVirtualMachine(ABC, threading.Thread):

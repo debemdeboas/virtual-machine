@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Union, Any, TextIO, List
 
-from command import IBaseCommand
-from register import IRegister
-from virtual_machine import IVirtualMachine
+from source.command.command import IBaseCommand
+from source.register.register import IRegister
+from source.vm.virtual_machine import IVirtualMachine
 
 
 class ICpu(ABC):
