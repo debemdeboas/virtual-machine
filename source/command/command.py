@@ -666,6 +666,8 @@ class Command_TRAP(BaseCommand):
         Equivalent to:
          `scanf("%d", R8)` (not `&R8` because R8 already points to an address)
         """
+
+        # In a real system, this TRAP would call the keyboard driver
         word = input()
         self.mem.save(to_word(f'DATA {int(word)}'), self.r2.value)
 
@@ -676,6 +678,7 @@ class Command_TRAP(BaseCommand):
          `printf("%d", *R8)` (not `R8` because it is a pointer to an address)
         """
         if isinstance((word := self.mem.access(self.r2.value)), Command_DATA):
+            # In a real system, this TRAP would call the graphics card driver
             print(word.execute())
         else:
             raise EInvalidCommand(f'Address {self.r2.value} does not contain any DATA')
