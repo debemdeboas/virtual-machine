@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Union, Any, TextIO, List
+from typing import Dict, Union, Any, TextIO, List, Callable
+from queue import Queue
 
 from source.command.command import IBaseCommand
 from source.register.register import IRegister
@@ -34,6 +35,7 @@ class Cpu(ICpu):
 
     __program_counter: IRegister
     __instruction_register: Union[IBaseCommand, None]
+    __interruption_queue: Queue
 
     def __init__(self, owner: IVirtualMachine): ...
 

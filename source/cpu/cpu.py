@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from queue import Queue
 
 from source.command.command import EInvalidCommand, ETrap, EInvalidAddress, EProgramEnd, EMathOverflowError, Command_TRAP
 from source.register.register import Register
@@ -37,6 +38,7 @@ class Cpu(ICpu):
 
         self.__program_counter = Register(0)
         self.__instruction_register = None
+        self.__interruption_queue = Queue()  # Infinitely big interruption queue
 
     @property
     def pc(self):
@@ -51,7 +53,8 @@ class Cpu(ICpu):
         return {
             'mem': self.owner.memory,
             'pc': self.__program_counter,
-            'registers': self.registers
+            'registers': self.registers,
+            'interruption_queue': self.__interruption_queue,
         }
 
     def loop(self):
@@ -70,26 +73,20 @@ class Cpu(ICpu):
             self.owner.dump(to_file=False)
 
             # Execute the command
-            try:
-                self.__instruction_register.execute()
-            except EInvalidCommand as E:
-                self.owner.dump(E)
-                break
-            except EInvalidAddress as E:
-                self.owner.dump(E)
-                break
-            except EProgramEnd as E:
-                self.owner.dump(E)
-                break
-            except (EMathOverflowError, OverflowError) as E:
-                self.owner.dump(E)
-                break
-            except ETrap:  # Handle traps raised by a command
-                if isinstance(self.__instruction_register, Command_TRAP):
-                    self.__instruction_register.handle_trap()
-            except Exception as E:
-                self.owner.dump(E)
-                break
+            self.__instruction_register.execute()
+
+            # Check for any interruptions
+            if self.__interruption_queue.qsize() > 0:
+                interrupt = self.__interruption_queue.get_nowait()
+                if isinstance(interrupt, ETrap):  # Software interruption triggered by the user program
+                    interrupt.args[0]()  # Handle the interruption
+                elif isinstance(interrupt, EProgramEnd):  # STOP instruction
+                    print('STOP received. Ending program.')
+                    self.owner.dump(interrupt)
+                    break
+                else:  # Some other exception occurred, end the program execution
+                    self.owner.dump(interrupt)
+                    break
 
             if self.pc.value == _curr_address:
                 self.pc.value += 1
