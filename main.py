@@ -23,7 +23,7 @@ root.resizable(False, False)
 text = tk.Text(root, width=120, height=80)
 # text = None
 
-vm = VirtualMachine(mem_size=512, tk=text)
+vm = VirtualMachine(mem_size=2048, tk=text)
 vm.load_from_file(pathlib.Path(file))
 vm.start()
 
