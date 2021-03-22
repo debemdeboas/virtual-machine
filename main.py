@@ -1,9 +1,7 @@
 # -----------------------------------------------------------------------------
 # --------------------- Operating Systems Assignment #1 -----------------------
-# ---- Author: Rafael Almeida de Bem
-# ---- Created on: 09/03/2021 (DD/MM/YYYY)
-# ---- Modified on: 13/03/2021
-# ----              14/03/2021
+# ---- Author: Rafael Almeida de Bem                                       ----
+# ---- Created on: 09/03/2021 (DD/MM/YYYY)                                 ----
 # -----------------------------------------------------------------------------
 
 from __future__ import annotations
