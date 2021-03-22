@@ -26,6 +26,9 @@ class ICpu(ABC):
     @abstractmethod
     def dump_list(self): ...
 
+    @abstractmethod
+    def queue_interrupt(self, interrupt): ...
+
 
 class Cpu(ICpu):
     # noinspection PyMissingConstructor
@@ -54,7 +57,7 @@ class Cpu(ICpu):
             'mem': self.owner.memory,
             'pc': self.__program_counter,
             'registers': self.registers,
-            'interruption_queue': self.__interruption_queue,
+            'interrupt': self.queue_interrupt,  # Method pointer to the CPU's interruption queue
         }
 
     def loop(self):
@@ -107,3 +110,6 @@ class Cpu(ICpu):
 
         [res.append(f'{k}: {v}\n') for k, v in self.registers.items()]
         return res
+
+    def queue_interrupt(self, interrupt):
+        self.__interruption_queue.put(interrupt)
