@@ -33,7 +33,7 @@ Every CPU cycle the GUI updates and sleeps for half a second. Without a Tk objec
 
 The VM contains both the CPU and the Memory instances. First, the CPU is instantiated. Secondly, the memory. Lastly,
 the Tk object is checked and, if it is defined, some properties are set - such as disabling the capture of keystrokes,
-and some tags for coloring the current command (light red), and the command that threw an exception (dark red).
+and some tags for coloring the current command (light red), and the command that set an interruption (dark red).
 
 Upon initialization, the memory is populated with 512 `Command_EMPTY` objects.
 
@@ -45,10 +45,24 @@ With the loading of the program into the memory done, the CPU can execute its lo
 
 ### Interruptions and Traps
 
-Interruptions and traps are also implemented, both using Exceptions. When a trap is set, a `ETrap` exception is raised
-by the command module, signaling the CPU to handle that trap. When an error occurs, such as an `IndexError` on the memory
-array, custom interruption exceptions are raised:
+~~Interruptions and traps are also implemented, both using Exceptions.~~
 
+Interruptions and traps are implemented using a Queue that holds the Exception classes that correspond to each
+interruption type. Custom exception classes were used in this case to emphasize that an interruption needs to be handled.
+A command can set a trap by doing the following:
+
+```python
+# Types of each of the referenced arguments:
+self: IBaseCommand = ...
+self.interruption_queue: Queue = ...
+self.func: Callable = ...
+
+# Set a trap 
+self.interruption_queue.put(ETrap(self.func))
+```
+
+When an error occurs, such as an `IndexError` on a memory access attempt, an interruption is set and executed after the
+command has ended. The interruption classes are as follows:
 
 | Exception             | Meaning |
 |:---------------------:|----|
