@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from queue import Queue
 
-from source.command.command import EInvalidCommand, ETrap, EInvalidAddress, EProgramEnd, EMathOverflowError, Command_TRAP
+from source.command.command import ETrap, EProgramEnd
 from source.register.register import Register
 
 
@@ -58,6 +58,7 @@ class Cpu(ICpu):
         }
 
     def loop(self):
+        end_loop = False
         print('CPU: Start loop')
         while True:
             # Access the memory address stored in PC
@@ -76,17 +77,22 @@ class Cpu(ICpu):
             self.__instruction_register.execute()
 
             # Check for any interruptions
-            if self.__interruption_queue.qsize() > 0:
+            while self.__interruption_queue.qsize() > 0:
                 interrupt = self.__interruption_queue.get_nowait()
                 if isinstance(interrupt, ETrap):  # Software interruption triggered by the user program
                     interrupt.args[0]()  # Handle the interruption
+                    continue
                 elif isinstance(interrupt, EProgramEnd):  # STOP instruction
                     print('STOP received. Ending program.')
-                    self.owner.dump(interrupt)
-                    break
-                else:  # Some other exception occurred, end the program execution
-                    self.owner.dump(interrupt)
-                    break
+
+                # Some other exception (interruption) occurred, end the program execution
+                with self.__interruption_queue.mutex:  # Guarantee thread-safety
+                    self.__interruption_queue.queue.clear()
+                self.owner.dump(interrupt)
+                end_loop = True
+
+            if end_loop:  # End loop before incrementing PC to dump the correct memory data
+                break
 
             if self.pc.value == _curr_address:
                 self.pc.value += 1
