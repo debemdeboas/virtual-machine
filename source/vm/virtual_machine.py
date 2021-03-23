@@ -17,7 +17,6 @@ class IVirtualMachine(ABC, threading.Thread):
     Implemented by the `VirtualMachine` class.
     """
 
-    # noinspection PyMissingConstructor
     @abstractmethod
     def __init__(self, mem_size): ...
 
@@ -40,8 +39,7 @@ class VirtualMachine(IVirtualMachine):
     Contains a CPU and a Memory modules, that each refer to this object as their "owner" (or parent).
     """
 
-    # noinspection PyMissingConstructor
-    def __init__(self, mem_size, tk):
+    def __init__(self, mem_size, tk=None):
         """Creates a new Virtual Machine thread
 
         Creates both a CPU object and a Memory object as well.
