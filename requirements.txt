@@ -1,4 +1,14 @@
+atomicwrites==1.4.0
+attrs==20.3.0
+colorama==0.4.4
+iniconfig==1.1.1
 mock==4.0.3
+packaging==20.9
+parameterized==0.8.1
+pluggy==0.13.1
+py==1.10.0
 py-fibonacci==0.5.2
 pyfiglet==0.8.post1
-parameterized~=0.8.1
+pyparsing==2.4.7
+pytest==6.2.2
+toml==0.10.2
