@@ -299,7 +299,7 @@ class Command_JMPIM(BaseCommand):
         if isinstance(word, Command_DATA):
             self.pc.value = word.execute()
         else:
-            self.interruption_queue.put(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
+            self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
 
 
 class Command_JMPIGM(BaseCommand):
@@ -329,7 +329,7 @@ class Command_JMPIGM(BaseCommand):
             if isinstance(word, Command_DATA):
                 self.pc.value = word.execute()
             else:
-                self.interruption_queue.put(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
+                self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
         else:
             self.pc.value += 1
 
@@ -361,7 +361,7 @@ class Command_JMPILM(BaseCommand):
             if isinstance(word, Command_DATA):
                 self.pc.value = word.execute()
             else:
-                self.interruption_queue.put(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
+                self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
         else:
             self.pc.value += 1
 
@@ -393,7 +393,7 @@ class Command_JMPIEM(BaseCommand):
             if isinstance(word, Command_DATA):
                 self.pc.value = word.execute()
             else:
-                self.interruption_queue.put(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
+                self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
         else:
             self.pc.value += 1
 
@@ -409,7 +409,7 @@ class Command_STOP(BaseCommand):
         super().__init__('STOP', *args)
 
     def execute(self):
-        self.interruption_queue.put(EProgramEnd())
+        self.interrupt(EProgramEnd())
 
 
 class Command_ADDI(BaseCommand):
@@ -549,7 +549,7 @@ class Command_LDD(BaseCommand):
         if isinstance((word := self.mem.access(self.p)), Command_DATA):
             self.r1.value = word.execute()
         else:
-            self.interruption_queue.put(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
+            self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
 
 
 class Command_STD(BaseCommand):
@@ -591,7 +591,7 @@ class Command_LDX(BaseCommand):
         if isinstance(word, Command_DATA):
             self.r1.value = word.execute()
         else:
-            self.interruption_queue.put(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
+            self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
 
 
 class Command_STX(BaseCommand):
@@ -681,14 +681,14 @@ class Command_TRAP(BaseCommand):
             # In a real system, this TRAP would call the graphics card driver
             print(word.execute())
         else:
-            self.interruption_queue.put(EInvalidCommand(f'Address {self.r2.value} does not contain any DATA'))
+            self.interrupt(EInvalidCommand(f'Address {self.r2.value} does not contain any DATA'))
 
     def execute(self):
         self.func = {
             1: self._sys_call_in,
             2: self._sys_call_out,
         }[self.r1.value]
-        self.interruption_queue.put(ETrap(self.func))
+        self.interrupt(ETrap(self.func))
 
 
 # noinspection SpellCheckingInspection
