@@ -168,7 +168,6 @@ class Command_JMP(BaseCommand):
 
 
 class Command_JMPI(BaseCommand):
-    # noinspection SpellCheckingInspection
     """Direct jump, with register
 
         Syntax:
@@ -181,7 +180,6 @@ class Command_JMPI(BaseCommand):
     PARAMS = ['r1']
 
     def __init__(self, *args):
-        # noinspection SpellCheckingInspection
         super().__init__('JMPI', *args)
 
     def execute(self):
@@ -189,7 +187,6 @@ class Command_JMPI(BaseCommand):
 
 
 class Command_JMPIG(BaseCommand):
-    # noinspection SpellCheckingInspection
     """Conditional jump, with register
 
         Jumps to `r1` only if `r2` is greater than zero.
@@ -207,7 +204,6 @@ class Command_JMPIG(BaseCommand):
     PARAMS = ['r1', 'r2']
 
     def __init__(self, *args):
-        # noinspection SpellCheckingInspection
         super().__init__('JMPIG', *args)
 
     def execute(self):
@@ -218,7 +214,6 @@ class Command_JMPIG(BaseCommand):
 
 
 class Command_JMPIL(BaseCommand):
-    # noinspection SpellCheckingInspection
     """Conditional jump, with register
 
         Jumps to `r1` only if `r2` is lesser than zero.
@@ -236,7 +231,6 @@ class Command_JMPIL(BaseCommand):
     PARAMS = ['r1', 'r2']
 
     def __init__(self, *args):
-        # noinspection SpellCheckingInspection
         super().__init__('JMPIL', *args)
 
     def execute(self):
@@ -247,7 +241,6 @@ class Command_JMPIL(BaseCommand):
 
 
 class Command_JMPIE(BaseCommand):
-    # noinspection SpellCheckingInspection
     """Conditional jump, with register
 
         Jumps to `r1` only if `r2` is equal to zero.
@@ -265,7 +258,6 @@ class Command_JMPIE(BaseCommand):
     PARAMS = ['r1', 'r2']
 
     def __init__(self, *args):
-        # noinspection SpellCheckingInspection
         super().__init__('JMPIE', *args)
 
     def execute(self):
@@ -276,7 +268,6 @@ class Command_JMPIE(BaseCommand):
 
 
 class Command_JMPIM(BaseCommand):
-    # noinspection SpellCheckingInspection
     """Indirect jump, with memory
 
         Jumps to the address contained in the position `p`.
@@ -291,7 +282,6 @@ class Command_JMPIM(BaseCommand):
     PARAMS = ['p']
 
     def __init__(self, *args):
-        # noinspection SpellCheckingInspection
         super().__init__('JMPIM', *args)
 
     def execute(self):
@@ -303,7 +293,6 @@ class Command_JMPIM(BaseCommand):
 
 
 class Command_JMPIGM(BaseCommand):
-    # noinspection SpellCheckingInspection
     """Conditional indirect jump, with memory
 
         Jumps to the address contained in the position `p` only if `r2` is greater than zero.
@@ -320,7 +309,6 @@ class Command_JMPIGM(BaseCommand):
     PARAMS = ['p', 'r2']
 
     def __init__(self, *args):
-        # noinspection SpellCheckingInspection
         super().__init__('JMPIGM', *args)
 
     def execute(self):
@@ -335,7 +323,6 @@ class Command_JMPIGM(BaseCommand):
 
 
 class Command_JMPILM(BaseCommand):
-    # noinspection SpellCheckingInspection
     """Conditional indirect jump, with memory
 
         Jumps to the address contained in the position `p` only if `r2` is lesser than zero.
@@ -352,7 +339,6 @@ class Command_JMPILM(BaseCommand):
     PARAMS = ['p', 'r2']
 
     def __init__(self, *args):
-        # noinspection SpellCheckingInspection
         super().__init__('JMPILM', *args)
 
     def execute(self):
@@ -367,7 +353,6 @@ class Command_JMPILM(BaseCommand):
 
 
 class Command_JMPIEM(BaseCommand):
-    # noinspection SpellCheckingInspection
     """Conditional indirect jump, with memory
 
         Jumps to the address contained in the position `p` only if `r2` is equal to zero.
@@ -384,7 +369,6 @@ class Command_JMPIEM(BaseCommand):
     PARAMS = ['p', 'r2']
 
     def __init__(self, *args):
-        # noinspection SpellCheckingInspection
         super().__init__('JMPIEM', *args)
 
     def execute(self):
@@ -432,7 +416,6 @@ class Command_ADDI(BaseCommand):
 
 
 class Command_SUBI(BaseCommand):
-    # noinspection SpellCheckingInspection
     """Immediate subtraction
 
         Syntax:
@@ -445,7 +428,6 @@ class Command_SUBI(BaseCommand):
     PARAMS = ['r1', 'p']
 
     def __init__(self, *args):
-        # noinspection SpellCheckingInspection
         super().__init__('SUBI', *args)
 
     def execute(self):
@@ -491,7 +473,6 @@ class Command_SUB(BaseCommand):
 
 
 class Command_MULT(BaseCommand):
-    # noinspection SpellCheckingInspection
     """Multiplication
 
         Syntax:
@@ -504,7 +485,6 @@ class Command_MULT(BaseCommand):
     PARAMS = ['r1', 'r2']
 
     def __init__(self, *args):
-        # noinspection SpellCheckingInspection
         super().__init__('MULT', *args)
 
     def execute(self):
@@ -677,6 +657,7 @@ class Command_TRAP(BaseCommand):
         Equivalent to:
          `printf("%d", *R8)` (not `R8` because it is a pointer to an address)
         """
+
         if isinstance((word := self.mem.access(self.r2.value)), Command_DATA):
             # In a real system, this TRAP would call the graphics card driver
             print(word.execute())
@@ -691,18 +672,9 @@ class Command_TRAP(BaseCommand):
         self.interrupt(ETrap(self.func))
 
 
-# noinspection SpellCheckingInspection
 CommandInformation = namedtuple(
     'CommandInformation', ['opcode', 'regex_validator', 'classname'])
 
-# noinspection SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
-# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
-# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
-# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
-# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
-# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
-# SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,
-# SpellCheckingInspection,SpellCheckingInspection
 INFO = {
     'DATA': CommandInformation('DATA', r'DATA\s(-?\d+)', Command_DATA),
     '____': CommandInformation('____', r'____', Command_EMPTY),
@@ -732,7 +704,6 @@ INFO = {
     'STX': CommandInformation('STX', r'STX\s\[([R|r]\d+)\],\s([R|r]\d+)', Command_STX),
     'SWAP': CommandInformation('SWAP', r'SWAP\s([R|r]\d+),\s([R|r]\d+)', Command_SWAP),
     # Traps:
-    # 'TRAP': CommandInformation('TRAP', r'TRAP\s([R|r]\d+),\s([R|r]\d+)', Command_TRAP),
     # TRAP commands should not accept any registers besides R8 and R9 (see definition in `Command_TRAP`)
     'TRAP': CommandInformation('TRAP', r'TRAP\s([R|r]8),\s([R|r]9)', Command_TRAP),
 }

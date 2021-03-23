@@ -20,7 +20,6 @@ class IMemory(ABC):
 
 
 class Memory(IMemory):
-    # noinspection PyMissingConstructor
     def __init__(self, owner, memory_length):
         self.owner = owner
         self._inner_memory = []

@@ -15,7 +15,6 @@ class IRegister(ABC):
 
 
 class Register(IRegister):
-    # noinspection PyMissingConstructor
     def __init__(self, value=0):
         self._value = value
 

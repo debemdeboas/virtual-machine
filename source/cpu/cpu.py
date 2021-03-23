@@ -31,7 +31,6 @@ class ICpu(ABC):
 
 
 class Cpu(ICpu):
-    # noinspection PyMissingConstructor
     def __init__(self, owner):
         self.owner = owner
 
