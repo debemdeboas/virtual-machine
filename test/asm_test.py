@@ -17,7 +17,7 @@ class AssemblyTest(unittest.TestCase):
         Test the Fibonacci sequence generator assembly file
         """
 
-        self.vm.load_from_file(Path('../example_programs/fibonacci.asm'))
+        self.vm.load_from_file(Path('example_programs/fibonacci.asm'))
         self.vm.start()
         self.vm.join()
 
@@ -31,7 +31,7 @@ class AssemblyTest(unittest.TestCase):
         Test the P2 assembly file, which should write `n` Fibonacci values
         """
 
-        self.vm.load_from_file(Path('../example_programs/p2.asm'))
+        self.vm.load_from_file(Path('example_programs/p2.asm'))
         self.vm.start()
         self.vm.join()
 
@@ -53,7 +53,7 @@ class AssemblyTest(unittest.TestCase):
         Mock user input with the `mock` module and use `amount` parameter as fibonacci length
         """
 
-        self.vm.load_from_file(Path('../example_programs/p2_traps.asm'))
+        self.vm.load_from_file(Path('example_programs/p2_traps.asm'))
 
         fib_amount = amount
 
@@ -77,7 +77,7 @@ class AssemblyTest(unittest.TestCase):
 
         import math
 
-        self.vm.load_from_file(Path('../example_programs/p3.asm'))
+        self.vm.load_from_file(Path('example_programs/p3.asm'))
 
         self.vm.start()
         self.vm.join()
@@ -103,7 +103,7 @@ class AssemblyTest(unittest.TestCase):
 
         import math
 
-        self.vm.load_from_file(Path('../example_programs/p3_traps.asm'))
+        self.vm.load_from_file(Path('example_programs/p3_traps.asm'))
 
         with mock.patch('builtins.input', return_value=number):
             self.vm.start()
@@ -126,7 +126,7 @@ class AssemblyTest(unittest.TestCase):
         literal_array = [73, 29, 8, 82, 199, 62, 164, 182, 29, 197, 38, 2, 186, 192, 35, 18, 122, 138, 181, 195, 86, 174, 75, 135, 7, 12, 33, 67, 62, 133, 55, 104, 78, 84, 91, 121, 73, 178, 117, 109, 4, 163, 11, 182, 54, 77, 107, 197, 81, 100]
         literal_array.sort()
 
-        self.vm.load_from_file(Path('../example_programs/p4.asm'))
+        self.vm.load_from_file(Path('example_programs/p4.asm'))
 
         self.vm.start()
         self.vm.join()
