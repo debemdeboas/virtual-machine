@@ -4,6 +4,10 @@ A RISC-like (**R**educed **I**nstruction **S**et **C**omputer) emulator that run
 
 Commit message emoji meanings can be found [here](https://gist.github.com/parmentf/035de27d6ed1dce0b36a).
 
+## Pipeline status
+
+Tests: ![PyTest](https://img.shields.io/github/workflow/status/debemdeboas/virtual-machine/Run%20PyTest)
+
 ## About
 
 Implement a virtual machine that contains a CPU and Memory modules and runs a simplified version of the Assembly
