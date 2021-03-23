@@ -6,7 +6,7 @@ Commit message emoji meanings can be found [here](https://gist.github.com/parmen
 
 ## Pipeline status
 
-Tests: ![PyTest](https://img.shields.io/github/workflow/status/debemdeboas/virtual-machine/Run%20PyTest)
+![PyTest](https://img.shields.io/github/workflow/status/debemdeboas/virtual-machine/Run%20PyTest)
 
 ## About
 
