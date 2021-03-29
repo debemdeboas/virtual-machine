@@ -4,6 +4,10 @@ A RISC-like (**R**educed **I**nstruction **S**et **C**omputer) emulator that run
 
 Commit message emoji meanings can be found [here](https://gist.github.com/parmentf/035de27d6ed1dce0b36a).
 
+## Contributors
+
+Rafael Almeida de Bem ([website](www.debem.dev)).
+
 ## Pipeline status
 
 ![PyTest](https://img.shields.io/github/workflow/status/debemdeboas/virtual-machine/Run%20PyTest)
