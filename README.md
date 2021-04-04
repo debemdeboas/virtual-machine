@@ -98,13 +98,27 @@ as the rest of the memory. When no argument is passed, a default example program
 python3 main.py
 ```
 
-Alternatively, you can also pass a `.asm` program file to be executed by the VM:
+The program supports command-line arguments.
+You could pass a list of files to be loaded onto the virtual memory:
 
 ```commandline
-python3 main.py foo.asm
+python3 main.py example_programs/p2.asm example_programs/p3.asm example_programs/p4.asm
 ```
 
-This will load the program `foo.asm` into the virtual memory and evaluate the program execution step by step.
+...or you could want to visualize the program execution with the Tk interface:
 
-If you do not wish to see the step-by-step evaluation of the program, open `main.py` and remove the `#` (comment) sign
-from `text = None`. This will stop Tkinter from opening.
+```commandline
+python3 main.py --tk
+```
+
+Naturally, you are able to combine both options:
+
+```commandline
+python3 main.py example_programs/fibonacci.asm --tk 
+```
+
+It's strongly recommended to read the documentation provided by `-h`:
+
+```commandline
+python3 main.py -h
+```
