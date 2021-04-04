@@ -46,11 +46,12 @@ class Memory(IMemory):
             raise EInvalidAddress('Index out of bounds')
 
     def save(self, command, address=None):
-        try:
-            if address is not None:
-                self._inner_memory[address] = command
-            else:
-                self._inner_memory[self._pos] = command
-                self._pos += 1
-        except IndexError as E:
-            raise EInvalidAddress(str(E))
+        if command is not None:
+            try:
+                if address is not None:
+                    self._inner_memory[address] = command
+                else:
+                    self._inner_memory[self._pos] = command
+                    self._pos += 1
+            except IndexError as E:
+                raise EInvalidAddress(str(E))
