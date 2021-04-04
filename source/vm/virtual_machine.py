@@ -70,8 +70,8 @@ class VirtualMachine(IVirtualMachine):
     def load_from_file(self, file: Path):
         with open(file, 'r') as f:
             for index, line in enumerate(f):
-                command = to_word(line.lstrip(' ').lstrip('\t'))
-                self._memory.save(command, index)
+                if command := to_word(line.lstrip(' ').lstrip('\t')):
+                    self._memory.save(command, index)
 
     def run(self):
         """
