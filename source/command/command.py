@@ -2,6 +2,8 @@ import re
 from abc import ABC, abstractmethod
 from collections import namedtuple
 
+from source.word.word import Word
+
 
 class IBaseCommand(ABC):
     """
@@ -286,8 +288,8 @@ class Command_JMPIM(BaseCommand):
 
     def execute(self):
         word = self.mem.access(self.p)
-        if isinstance(word, Command_DATA):
-            self.pc.value = word.execute()
+        if not word.free and isinstance(word.command, Command_DATA):
+            self.pc.value = word.command.execute()
         else:
             self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
 
@@ -314,8 +316,8 @@ class Command_JMPIGM(BaseCommand):
     def execute(self):
         if self.r2.value > 0:
             word = self.mem.access(self.p)
-            if isinstance(word, Command_DATA):
-                self.pc.value = word.execute()
+            if not word.free and isinstance(word.command, Command_DATA):
+                self.pc.value = word.command.execute()
             else:
                 self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
         else:
@@ -344,8 +346,8 @@ class Command_JMPILM(BaseCommand):
     def execute(self):
         if self.r2.value < 0:
             word = self.mem.access(self.p)
-            if isinstance(word, Command_DATA):
-                self.pc.value = word.execute()
+            if not word.free and isinstance(word.command, Command_DATA):
+                self.pc.value = word.command.execute()
             else:
                 self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
         else:
@@ -374,8 +376,8 @@ class Command_JMPIEM(BaseCommand):
     def execute(self):
         if self.r2.value == 0:
             word = self.mem.access(self.p)
-            if isinstance(word, Command_DATA):
-                self.pc.value = word.execute()
+            if not word.free and isinstance(word.command, Command_DATA):
+                self.pc.value = word.command.execute()
             else:
                 self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
         else:
@@ -526,8 +528,9 @@ class Command_LDD(BaseCommand):
         super().__init__('LDD', *args)
 
     def execute(self):
-        if isinstance((word := self.mem.access(self.p)), Command_DATA):
-            self.r1.value = word.execute()
+        word = self.mem.access(self.p)
+        if not word.free and isinstance(word.command, Command_DATA):
+            self.r1.value = word.command.execute()
         else:
             self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
 
@@ -568,8 +571,8 @@ class Command_LDX(BaseCommand):
 
     def execute(self):
         word = self.mem.access(self.r2.value)
-        if isinstance(word, Command_DATA):
-            self.r1.value = word.execute()
+        if not word.free and isinstance(word.command, Command_DATA):
+            self.r1.value = word.command.execute()
         else:
             self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
 
@@ -658,9 +661,10 @@ class Command_TRAP(BaseCommand):
          `printf("%d", *R8)` (not `R8` because it is a pointer to an address)
         """
 
-        if isinstance((word := self.mem.access(self.r2.value)), Command_DATA):
+        word = self.mem.access(self.r2.value)
+        if not word.free and isinstance(word.command, Command_DATA):
             # In a real system, this TRAP would call the graphics card driver
-            print(word.execute())
+            print(word.command.execute())
         else:
             self.interrupt(EInvalidCommand(f'Address {self.r2.value} does not contain any DATA'))
 
@@ -732,4 +736,4 @@ def to_word(val):
     else:
         raise EInvalidCommand(f'Value \'{val.strip()}\' is not a valid command')
     curr.original = val.rstrip('\n')
-    return curr
+    return Word(curr, False)

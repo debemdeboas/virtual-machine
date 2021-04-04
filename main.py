@@ -40,7 +40,7 @@ def main():
     else:
         files = ['example_programs/p2.asm']
 
-    vm = VirtualMachine(mem_size=2048, tk=text)
+    vm = VirtualMachine(mem_size=4096, tk=text)
     for file in files:
         vm.load_from_file(pathlib.Path(file))
     vm.start()

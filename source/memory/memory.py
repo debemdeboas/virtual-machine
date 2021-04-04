@@ -1,11 +1,10 @@
 from abc import ABC, abstractmethod
 from source.command.command import to_word, EInvalidAddress
+from typing import List
+from source.word.word import IWord
 
 
 class IMemory(ABC):
-    @abstractmethod
-    def __init__(self, owner, memory_length): ...
-
     @abstractmethod
     def dump(self, file): ...
 
@@ -35,7 +34,8 @@ class Memory(IMemory):
 
     def dump_list(self):
         res = ['---- Memory data ----\n']
-        for index, command in enumerate(self._inner_memory):
+        for index, word in enumerate(self._inner_memory):
+            command = word.command
             res.append(f'[{index:4d}]\t{command.dump():25} | {command.original:30}\n')
         return res
 
