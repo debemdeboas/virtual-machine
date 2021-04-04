@@ -1,14 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import List, TextIO, Deque
 
-from source.command.command import IBaseCommand
+from source.word.word import IWord
 from source.vm.virtual_machine import IVirtualMachine
 
 
 class IMemory(ABC):
-    @abstractmethod
-    def __init__(self, owner: IVirtualMachine, memory_length: int): ...
-
     @abstractmethod
     def dump(self, file: TextIO): ...
 
@@ -16,14 +13,14 @@ class IMemory(ABC):
     def dump_list(self) -> List[str]: ...
 
     @abstractmethod
-    def access(self, address: int) -> IBaseCommand: ...
+    def access(self, address: int) -> IWord: ...
 
     @abstractmethod
-    def save(self, command: IBaseCommand, address: int = None): ...
+    def save(self, command: IWord, address: int = None): ...
 
 
 class Memory(IMemory):
-    _inner_memory: List[IBaseCommand]
+    _inner_memory: List[IWord]
     _length: int
     _pos: int
 
@@ -33,6 +30,6 @@ class Memory(IMemory):
 
     def dump_list(self) -> List[str]: ...
 
-    def access(self, address: int) -> IBaseCommand: ...
+    def access(self, address: int) -> IWord: ...
 
-    def save(self, command: IBaseCommand, address: int = None): ...
+    def save(self, command: IWord, address: int = None): ...

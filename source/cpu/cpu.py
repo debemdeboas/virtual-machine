@@ -67,7 +67,7 @@ class Cpu(ICpu):
             _curr_address = self.pc.value
 
             # Set IR to the command pointed by PC
-            self.__instruction_register = self.owner.memory.access(int(_curr_address))
+            self.__instruction_register = self.owner.memory.access(int(_curr_address)).command
 
             # Load the command instance with CPU registers, memory and PC
             self.__instruction_register.set_instance_params(**self.command_params)
