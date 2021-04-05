@@ -551,7 +551,10 @@ class Command_STD(BaseCommand):
         super().__init__('STD', *args)
 
     def execute(self):
-        self.mem.save(to_word(f'DATA {self.r1.value}\n'), self.p)
+        try:
+            self.mem.save(to_word(f'DATA {self.r1.value}\n'), self.p)
+        except (EInvalidAddress, EInvalidCommand) as E:
+            self.interrupt(E)
 
 
 class Command_LDX(BaseCommand):
@@ -593,7 +596,10 @@ class Command_STX(BaseCommand):
         super().__init__('STX', *args)
 
     def execute(self):
-        self.mem.save(to_word(f'DATA {self.r2.value}\n'), self.r1.value)
+        try:
+            self.mem.save(to_word(f'DATA {self.r2.value}\n'), self.r1.value)
+        except (EInvalidAddress, EInvalidCommand) as E:
+            self.interrupt(E)
 
 
 class Command_SWAP(BaseCommand):
@@ -652,7 +658,10 @@ class Command_TRAP(BaseCommand):
 
         # In a real system, this TRAP would call the keyboard driver
         word = input()
-        self.mem.save(to_word(f'DATA {int(word)}'), self.r2.value)
+        try:
+            self.mem.save(to_word(f'DATA {int(word)}'), self.r2.value)
+        except (EInvalidAddress, EInvalidCommand) as E:
+            self.interrupt(E)
 
     def _sys_call_out(self):
         """Mock a system call to the I/O handler
