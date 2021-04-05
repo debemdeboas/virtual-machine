@@ -6,9 +6,6 @@ from source.register.register import Register
 
 
 class ICpu(ABC):
-    @abstractmethod
-    def __init__(self, ): ...
-
     @property
     @abstractmethod
     def pc(self): ...

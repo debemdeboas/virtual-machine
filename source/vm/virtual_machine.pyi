@@ -8,9 +8,6 @@ from source.memory.memory import IMemory
 
 
 class IVirtualMachine(ABC, threading.Thread):
-    @abstractmethod
-    def __init__(self, mem_size: int) -> None: ...
-
     @property
     @abstractmethod
     def memory(self) -> IMemory: ...

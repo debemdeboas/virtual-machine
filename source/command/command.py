@@ -16,7 +16,7 @@ class IBaseCommand(ABC):
     original: str
 
     @abstractmethod
-    def __init__(self, opcode, **kwargs): ...
+    def __init__(self, **kwargs): ...
 
     @abstractmethod
     def dump(self): ...
@@ -119,14 +119,14 @@ class BaseCommand(IBaseCommand):
 
         try:
             self.r1 = self.registers[self.r1.strip(',').lower()]
-        except KeyError as E:
+        except KeyError:
             raise EInvalidCommand(f'Register {self.r1.strip(",")} is not a valid register value')
         except:
             pass
 
         try:
             self.r2 = self.registers[self.r2.strip(',').lower()]
-        except KeyError as E:
+        except KeyError:
             raise EInvalidCommand(f'Register {self.r2.strip(",")} is not a valid register value')
         except:
             pass

@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import List, TextIO, Deque
+from typing import List, TextIO
 
-from source.word.word import IWord
 from source.vm.virtual_machine import IVirtualMachine
+from source.word.word import IWord
 
 
 class IMemory(ABC):

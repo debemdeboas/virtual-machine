@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
+
 from source.command.command import to_word, EInvalidAddress
-from typing import List
-from source.word.word import IWord
 
 
 class IMemory(ABC):

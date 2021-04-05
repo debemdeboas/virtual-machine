@@ -8,9 +8,6 @@ from source.word.word import IWord
 
 
 class ICpu(ABC):
-    @abstractmethod
-    def __init__(self, ): ...
-
     @property
     @abstractmethod
     def pc(self): ...
