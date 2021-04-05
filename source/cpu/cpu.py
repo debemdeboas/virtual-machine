@@ -67,16 +67,16 @@ class Cpu(ICpu):
             _curr_address = self.pc.value
 
             # Set IR to the command pointed by PC
-            self.__instruction_register = self.owner.memory.access(int(_curr_address)).command
+            self.__instruction_register = self.owner.memory.access(int(_curr_address))
 
             # Load the command instance with CPU registers, memory and PC
-            self.__instruction_register.set_instance_params(**self.command_params)
+            self.__instruction_register.command.set_instance_params(**self.command_params)
 
             # Don't dump to disk to save on disk I/O time, only update the TK interface
             self.owner.dump(to_file=False)
 
             # Execute the command
-            self.__instruction_register.execute()
+            self.__instruction_register.command.execute()
 
             # Check for any interruptions
             while self.__interruption_queue.qsize() > 0:
@@ -105,7 +105,7 @@ class Cpu(ICpu):
 
     def dump_list(self):
         res = ['---- Program counter ----\n', f'{self.__program_counter}\n', '---- Instruction register ----\n',
-               f'{self.__instruction_register.dump()}\n', '---- Registers ----\n']
+               f'{self.__instruction_register.command.dump()}\n', '---- Registers ----\n']
 
         [res.append(f'{k}: {v}\n') for k, v in self.registers.items()]
         return res
