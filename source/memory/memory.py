@@ -39,7 +39,7 @@ class Memory(IMemory):
         return res
 
     def access(self, address):
-        if 0 <= address < len(self._inner_memory):
+        if 0 <= address < len(self._inner_memory) - 1:
             return self._inner_memory[address]
         else:
             raise EInvalidAddress('Index out of bounds')
