@@ -730,9 +730,9 @@ def to_word(val):
         opcode = val
     if ((c_info := INFO.get(opcode, None)) is not None) and \
             (match := re.match(c_info.regex_validator, val)):
-        curr: IBaseCommand = c_info.classname(*match.groups())
+        curr = c_info.classname(*match.groups())
     elif val.startswith('\n') or val.startswith(';') or val.isspace() or not val:  # Ignore
-        curr: IBaseCommand = Command_EMPTY()
+        return Word(Command_EMPTY(), True)  # Free (dead) space on the memory
     else:
         raise EInvalidCommand(f'Value \'{val.strip()}\' is not a valid command')
     curr.original = val.rstrip('\n')

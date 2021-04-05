@@ -3,6 +3,7 @@ from typing import Any, List
 
 from source.memory.memory import IMemory
 from source.register.register import IRegister
+from source.word.word import IWord
 
 
 class IBaseCommand(ABC):
@@ -44,7 +45,7 @@ class Command_TRAP(BaseCommand):
     def handle_trap(self): ...
 
 
-def to_word(val: str) -> IBaseCommand: ...
+def to_word(val: str) -> IWord: ...
 
 
 class EInvalidCommand(Exception): ...
