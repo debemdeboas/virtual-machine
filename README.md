@@ -6,7 +6,7 @@ Commit message emoji meanings can be found [here](https://gist.github.com/parmen
 
 ## Contributors
 
-Rafael Almeida de Bem ([website](www.debem.dev)).
+Rafael Almeida de Bem ([website](https://www.debem.dev)).
 
 ## Pipeline status
 
