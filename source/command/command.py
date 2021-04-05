@@ -16,7 +16,7 @@ class IBaseCommand(ABC):
     original: str
 
     @abstractmethod
-    def __init__(self, opcode, **kwargs): ...
+    def __init__(self, **kwargs): ...
 
     @abstractmethod
     def dump(self): ...
@@ -119,14 +119,14 @@ class BaseCommand(IBaseCommand):
 
         try:
             self.r1 = self.registers[self.r1.strip(',').lower()]
-        except KeyError as E:
+        except KeyError:
             raise EInvalidCommand(f'Register {self.r1.strip(",")} is not a valid register value')
         except:
             pass
 
         try:
             self.r2 = self.registers[self.r2.strip(',').lower()]
-        except KeyError as E:
+        except KeyError:
             raise EInvalidCommand(f'Register {self.r2.strip(",")} is not a valid register value')
         except:
             pass
@@ -551,7 +551,10 @@ class Command_STD(BaseCommand):
         super().__init__('STD', *args)
 
     def execute(self):
-        self.mem.save(to_word(f'DATA {self.r1.value}\n'), self.p)
+        try:
+            self.mem.save(to_word(f'DATA {self.r1.value}\n'), self.p)
+        except (EInvalidAddress, EInvalidCommand) as E:
+            self.interrupt(E)
 
 
 class Command_LDX(BaseCommand):
@@ -593,7 +596,10 @@ class Command_STX(BaseCommand):
         super().__init__('STX', *args)
 
     def execute(self):
-        self.mem.save(to_word(f'DATA {self.r2.value}\n'), self.r1.value)
+        try:
+            self.mem.save(to_word(f'DATA {self.r2.value}\n'), self.r1.value)
+        except (EInvalidAddress, EInvalidCommand) as E:
+            self.interrupt(E)
 
 
 class Command_SWAP(BaseCommand):
@@ -652,7 +658,10 @@ class Command_TRAP(BaseCommand):
 
         # In a real system, this TRAP would call the keyboard driver
         word = input()
-        self.mem.save(to_word(f'DATA {int(word)}'), self.r2.value)
+        try:
+            self.mem.save(to_word(f'DATA {int(word)}'), self.r2.value)
+        except (EInvalidAddress, EInvalidCommand) as E:
+            self.interrupt(E)
 
     def _sys_call_out(self):
         """Mock a system call to the I/O handler
@@ -730,9 +739,9 @@ def to_word(val):
         opcode = val
     if ((c_info := INFO.get(opcode, None)) is not None) and \
             (match := re.match(c_info.regex_validator, val)):
-        curr: IBaseCommand = c_info.classname(*match.groups())
+        curr = c_info.classname(*match.groups())
     elif val.startswith('\n') or val.startswith(';') or val.isspace() or not val:  # Ignore
-        curr: IBaseCommand = Command_EMPTY()
+        return Word(Command_EMPTY(), True)  # Free (dead) space on the memory
     else:
         raise EInvalidCommand(f'Value \'{val.strip()}\' is not a valid command')
     curr.original = val.rstrip('\n')

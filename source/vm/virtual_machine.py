@@ -17,9 +17,6 @@ class IVirtualMachine(ABC, threading.Thread):
     Implemented by the `VirtualMachine` class.
     """
 
-    @abstractmethod
-    def __init__(self, mem_size): ...
-
     @property
     @abstractmethod
     def memory(self): ...

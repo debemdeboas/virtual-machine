@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
+
 from source.command.command import to_word, EInvalidAddress
-from typing import List
-from source.word.word import IWord
 
 
 class IMemory(ABC):
@@ -40,7 +39,7 @@ class Memory(IMemory):
         return res
 
     def access(self, address):
-        if 0 <= address < len(self._inner_memory):
+        if 0 <= address < len(self._inner_memory) - 1:
             return self._inner_memory[address]
         else:
             raise EInvalidAddress('Index out of bounds')

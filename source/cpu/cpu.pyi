@@ -1,16 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Union, Any, TextIO, List, Callable
 from queue import Queue
+from typing import Dict, Union, Any, TextIO, List
 
-from source.command.command import IBaseCommand
 from source.register.register import IRegister
 from source.vm.virtual_machine import IVirtualMachine
+from source.word.word import IWord
 
 
 class ICpu(ABC):
-    @abstractmethod
-    def __init__(self, ): ...
-
     @property
     @abstractmethod
     def pc(self): ...
@@ -37,7 +34,7 @@ class Cpu(ICpu):
     registers: Dict[str, IRegister]
 
     __program_counter: IRegister
-    __instruction_register: Union[IBaseCommand, None]
+    __instruction_register: Union[IWord, None]
     __interruption_queue: Queue
 
     def __init__(self, owner: IVirtualMachine): ...
@@ -46,7 +43,7 @@ class Cpu(ICpu):
     def pc(self) -> IRegister: ...
 
     @property
-    def ir(self) -> IBaseCommand: ...
+    def ir(self) -> IWord: ...
 
     @property
     def command_params(self) -> Dict[str, Any]: ...

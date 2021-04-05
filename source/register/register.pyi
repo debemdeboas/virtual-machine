@@ -2,9 +2,6 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 class IRegister(ABC):
-    @abstractmethod
-    def __init__(self) -> None: ...
-
     @property
     @abstractmethod
     def value(self) -> int: ...
