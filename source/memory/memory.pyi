@@ -33,3 +33,23 @@ class Memory(IMemory):
     def access(self, address: int) -> IWord: ...
 
     def save(self, command: IWord, address: int = None): ...
+
+
+class IMemoryManager(IMemory):
+    @abstractmethod
+    def allocate(self, number_of_words: int) -> List[int]: ...
+
+    @abstractmethod
+    def deallocate(self, frames: List[int]) -> None: ...
+
+
+class MemoryManager(Memory):
+    _frames: List[List[int]]
+    _frame_amount: int
+    _page_size: int
+
+    def __init__(self, owner: IVirtualMachine, memory_length: int, frame_amount: int, page_size: int): ...
+
+    def allocate(self, number_of_words: int) -> List[int]: ...
+
+    def deallocate(self, frames: List[int]) -> None: ...
