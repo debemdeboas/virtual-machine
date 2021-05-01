@@ -54,3 +54,31 @@ class Memory(IMemory):
                     self._pos += 1
             except IndexError as E:
                 raise EInvalidAddress(str(E))
+
+
+class IMemoryManager(IMemory):
+    @abstractmethod
+    def allocate(self, number_of_words): ...
+
+    @abstractmethod
+    def deallocate(self, frames): ...
+
+
+class MemoryManager(Memory):
+    def __init__(self, owner, memory_length, frame_amount, page_size):
+        super().__init__(owner, memory_length)
+
+        self._frame_amount = frame_amount
+        self._page_size = page_size
+
+        for i in range(self._frame_amount):
+            self._frames.append([*range(i * 16, (i + 1) * 16 - 1)])
+
+    def page_address_to_frame(self, page_address: int) -> int:
+        return page_address // self._page_size
+
+    def allocate(self, number_of_words):
+        pass
+
+    def deallocate(self, frames):
+        pass
