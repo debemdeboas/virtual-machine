@@ -4,7 +4,7 @@ from itertools import count
 
 from source.command.command import to_word, EInvalidAddress, EShutdown
 from source.memory.frame import Frame
-from process import ProcessControlBlock
+from source.memory.process import ProcessControlBlock
 
 
 class IMemory(ABC):
