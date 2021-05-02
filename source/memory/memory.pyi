@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import List, TextIO
+from typing import List, TextIO, Any, Dict
 
 from source.vm.virtual_machine import IVirtualMachine
 from source.word.word import IWord
+from source.memory.frame import Frame
 
 
 class IMemory(ABC):
@@ -40,16 +41,30 @@ class IMemoryManager(IMemory):
     def allocate(self, number_of_words: int) -> List[int]: ...
 
     @abstractmethod
-    def deallocate(self, frames: List[int]) -> None: ...
+    def deallocate(self, frames: List[List[int]]) -> None: ...
+
+    @abstractmethod
+    def create_process(self, process_name: str, code: List[str]) -> int: ...
+
+    def end_current_process(self): ...
 
 
-class MemoryManager(Memory):
-    _frames: List[List[int]]
+class MemoryManager(IMemoryManager, Memory):
+    _frames: List[Frame]
     _frame_amount: int
     _page_size: int
+    _processes: List
+    _pid_gen: Any
+    _pid_table: Dict
 
-    def __init__(self, owner: IVirtualMachine, memory_length: int, frame_amount: int, page_size: int): ...
+    def __init__(self, owner: IVirtualMachine, memory_length: int, page_size: int): ...
 
-    def allocate(self, number_of_words: int) -> List[int]: ...
+    def allocate(self, number_of_words: int) -> List[Frame]: ...
 
-    def deallocate(self, frames: List[int]) -> None: ...
+    def deallocate(self, frames: List[List[int]]) -> None: ...
+
+    def create_process(self, process_name: str, code: List[str]) -> int: ...
+
+    def get_next_free_frame(self) -> Frame: ...
+
+    def end_current_process(self): ...

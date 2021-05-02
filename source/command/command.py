@@ -73,6 +73,15 @@ class EMathOverflowError(OverflowError):
     pass
 
 
+class EShutdown(Exception):
+    """
+    End the CPU loop, no more processes are available
+
+    This interruption in thrown by the memory when no more processes are scheduled
+    """
+    pass
+
+
 class BaseCommand(IBaseCommand):
     """
     Base Command class
@@ -288,7 +297,7 @@ class Command_JMPIM(BaseCommand):
 
     def execute(self):
         word = self.mem.access(self.p)
-        if not word.free and isinstance(word.command, Command_DATA):
+        if isinstance(word.command, Command_DATA):
             self.pc.value = word.command.execute()
         else:
             self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
@@ -316,7 +325,7 @@ class Command_JMPIGM(BaseCommand):
     def execute(self):
         if self.r2.value > 0:
             word = self.mem.access(self.p)
-            if not word.free and isinstance(word.command, Command_DATA):
+            if isinstance(word.command, Command_DATA):
                 self.pc.value = word.command.execute()
             else:
                 self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
@@ -346,7 +355,7 @@ class Command_JMPILM(BaseCommand):
     def execute(self):
         if self.r2.value < 0:
             word = self.mem.access(self.p)
-            if not word.free and isinstance(word.command, Command_DATA):
+            if isinstance(word.command, Command_DATA):
                 self.pc.value = word.command.execute()
             else:
                 self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
@@ -376,7 +385,7 @@ class Command_JMPIEM(BaseCommand):
     def execute(self):
         if self.r2.value == 0:
             word = self.mem.access(self.p)
-            if not word.free and isinstance(word.command, Command_DATA):
+            if isinstance(word.command, Command_DATA):
                 self.pc.value = word.command.execute()
             else:
                 self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
@@ -529,7 +538,7 @@ class Command_LDD(BaseCommand):
 
     def execute(self):
         word = self.mem.access(self.p)
-        if not word.free and isinstance(word.command, Command_DATA):
+        if isinstance(word.command, Command_DATA):
             self.r1.value = word.command.execute()
         else:
             self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
@@ -574,7 +583,7 @@ class Command_LDX(BaseCommand):
 
     def execute(self):
         word = self.mem.access(self.r2.value)
-        if not word.free and isinstance(word.command, Command_DATA):
+        if isinstance(word.command, Command_DATA):
             self.r1.value = word.command.execute()
         else:
             self.interrupt(EInvalidCommand(f'Address {self.p} does not contain any DATA'))
@@ -671,7 +680,7 @@ class Command_TRAP(BaseCommand):
         """
 
         word = self.mem.access(self.r2.value)
-        if not word.free and isinstance(word.command, Command_DATA):
+        if isinstance(word.command, Command_DATA):
             # In a real system, this TRAP would call the graphics card driver
             print(word.command.execute())
         else:
@@ -741,8 +750,10 @@ def to_word(val):
             (match := re.match(c_info.regex_validator, val)):
         curr = c_info.classname(*match.groups())
     elif val.startswith('\n') or val.startswith(';') or val.isspace() or not val:  # Ignore
-        return Word(Command_EMPTY(), True)  # Free (dead) space on the memory
+        curr = Command_EMPTY()
+        curr.original = val.rstrip('\n')
+        return Word(curr)
     else:
         raise EInvalidCommand(f'Value \'{val.strip()}\' is not a valid command')
     curr.original = val.rstrip('\n')
-    return Word(curr, False)
+    return Word(curr)

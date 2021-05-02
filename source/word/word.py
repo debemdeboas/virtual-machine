@@ -4,10 +4,17 @@ from typing import Any
 
 class IWord(ABC):
     command: Any
-    free: bool
 
 
 class Word(IWord):
-    def __init__(self, command=None, free=True):
+    def __init__(self, command=None):
         self.command = command
-        self.free = free
+
+    def dump(self): return self.command.dump()
+
+    @property
+    def original(self): return self.command.original
+
+    def set_instance_params(self, **kwargs): self.command.set_instance_params(**kwargs)
+
+    def execute(self): self.command.execute()
