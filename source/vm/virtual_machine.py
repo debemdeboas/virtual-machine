@@ -6,9 +6,8 @@ from pathlib import Path
 
 from pyfiglet import figlet_format
 
-from source.command.command import to_word
 from source.cpu.cpu import Cpu
-from source.memory.memory import Memory
+from source.memory.memory import MemoryManager
 
 
 class IVirtualMachine(ABC, threading.Thread):
@@ -49,7 +48,7 @@ class VirtualMachine(IVirtualMachine):
         threading.Thread.__init__(self, daemon=False)
 
         self._cpu = Cpu(self)
-        self._memory = Memory(self, mem_size)
+        self._memory = MemoryManager(self, mem_size, 16)
         self.tk = tk
         if self.tk is not None:
             self.tk.tag_configure('current_command', background='misty rose')
@@ -66,9 +65,11 @@ class VirtualMachine(IVirtualMachine):
 
     def load_from_file(self, file: Path):
         with open(file, 'r') as f:
-            for index, line in enumerate(f):
-                if command := to_word(line.lstrip(' ').lstrip('\t')):
-                    self._memory.save(command, index)
+            lines = f.readlines()
+        # Close the file as soon as possible to free the disk
+        # Also use an auxiliary list to get its len()
+        pid = self._memory.create_process(file.name, lines)
+        print(f'Loaded process {file.name} into memory. PID: {pid}')
 
     def run(self):
         """

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from queue import Queue
 
-from source.command.command import ETrap, EProgramEnd
+from source.command.command import ETrap, EProgramEnd, EShutdown
 from source.register.register import Register
 
 
@@ -82,7 +82,11 @@ class Cpu(ICpu):
                     interrupt.args[0]()  # Handle the interruption
                     continue
                 elif isinstance(interrupt, EProgramEnd):  # STOP instruction
-                    print('STOP received. Ending program.')
+                    print('STOP received. Ending process.')
+                    self.owner.memory.end_current_process()
+                    continue
+                elif isinstance(interrupt, EShutdown):
+                    print('No more processes are scheduled. Shutting down...')
 
                 # Some other exception (interruption) occurred, end the program execution
                 with self.__interruption_queue.mutex:  # Guarantee thread-safety

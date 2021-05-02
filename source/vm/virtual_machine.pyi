@@ -4,13 +4,13 @@ from pathlib import Path
 from tkinter import Text
 
 from source.cpu.cpu import ICpu
-from source.memory.memory import IMemory
+from source.memory.memory import IMemoryManager
 
 
 class IVirtualMachine(ABC, threading.Thread):
     @property
     @abstractmethod
-    def memory(self) -> IMemory: ...
+    def memory(self) -> IMemoryManager: ...
 
     @property
     @abstractmethod
@@ -21,14 +21,14 @@ class IVirtualMachine(ABC, threading.Thread):
 
 
 class VirtualMachine(IVirtualMachine):
-    _memory: IMemory
+    _memory: IMemoryManager
     _cpu: ICpu
     tk: Text
 
     def __init__(self, mem_size: int, tk: Text = None): ...
 
     @property
-    def memory(self) -> IMemory: ...
+    def memory(self) -> IMemoryManager: ...
 
     @property
     def cpu(self) -> ICpu: ...
