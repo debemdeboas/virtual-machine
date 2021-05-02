@@ -35,8 +35,8 @@ class AssemblyTest(unittest.TestCase):
         self.vm.start()
         self.vm.join()
 
-        amount = self.vm.memory._inner_memory[1].command.p
-        start_address = self.vm.memory._inner_memory[2].command.p
+        amount = self.vm.memory._inner_memory[17].command.p
+        start_address = self.vm.memory._inner_memory[18].command.p
 
         for address, result in [(start_address, amount),
                                 *zip([x + start_address + 1 for x in range(amount)], fibonacci(length=amount))]:
@@ -61,7 +61,7 @@ class AssemblyTest(unittest.TestCase):
             self.vm.start()
             self.vm.join()
 
-        start_address = self.vm.memory._inner_memory[2].command.p
+        start_address = self.vm.memory._inner_memory[18].command.p
 
         for address, result in [(start_address, fib_amount),
                                 *zip([x + start_address + 1 for x in range(fib_amount)], fibonacci(length=fib_amount))]:
@@ -82,7 +82,7 @@ class AssemblyTest(unittest.TestCase):
         self.vm.start()
         self.vm.join()
 
-        number = self.vm.memory._inner_memory[3].command.p
+        number = self.vm.memory._inner_memory[19].command.p
 
         if number < 0:
             factorial = -1

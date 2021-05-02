@@ -109,6 +109,9 @@ class MemoryManager(Memory):
 
         # Mark frames as not free
         for frame in frames:
+            for address in frame.addresses:
+                # Zero the memory
+                address.command = to_word('____')
             frame.is_free = False
 
         return frames
@@ -117,9 +120,6 @@ class MemoryManager(Memory):
     def deallocate(frames):
         # Mark each position in the given frames as free
         for frame in frames:
-            for address in frame.addresses:
-                # Zero the memory address to avoid errors later on
-                address.command = to_word('____')
             frame.is_free = True
 
     def end_current_process(self):
