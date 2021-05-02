@@ -87,8 +87,6 @@ class Cpu(ICpu):
                     continue
                 elif isinstance(interrupt, EShutdown):
                     print('No more processes are scheduled. Shutting down...')
-                    end_loop = True
-                    break
 
                 # Some other exception (interruption) occurred, end the program execution
                 with self.__interruption_queue.mutex:  # Guarantee thread-safety
