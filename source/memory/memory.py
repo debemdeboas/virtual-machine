@@ -54,9 +54,9 @@ class Memory(IMemory):
         if command is not None:
             try:
                 if address is not None:
-                    self._inner_memory[address] = command
+                    self._inner_memory[address].command = command.command
                 else:
-                    self._inner_memory[self._pos] = command
+                    self._inner_memory[self._pos].command = command.command
                     self._pos += 1
             except IndexError as E:
                 raise EInvalidAddress(str(E))
@@ -64,7 +64,7 @@ class Memory(IMemory):
 
 class IMemoryManager(IMemory):
     @abstractmethod
-    def allocate(self, number_of_words): ...
+    def allocate(self, number_of_words: int, owner_pid: int) -> List[Frame]: ...
 
     @abstractmethod
     def deallocate(self, frames): ...
@@ -94,7 +94,7 @@ class MemoryManager(Memory):
         self.create_process('system', ['STOP'])
         self._curr_process = self._processes[0]
 
-    def allocate(self, number_of_words):
+    def allocate(self, number_of_words, owner_pid):
         # "I wish to allocate this number of words"
         # First, check if there is enough free size on the memory
         # Then, return the list of allocated frames
