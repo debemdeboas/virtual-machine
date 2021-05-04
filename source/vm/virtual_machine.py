@@ -70,6 +70,7 @@ class VirtualMachine(IVirtualMachine):
         # Also use an auxiliary list to get its len()
         pid = self._memory.create_process(file.name, lines)
         print(f'Loaded process {file.name} into memory. PID: {pid}')
+        return pid
 
     def run(self):
         """
