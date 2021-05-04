@@ -9,6 +9,7 @@ class IWord(ABC):
 class Word(IWord):
     def __init__(self, command=None):
         self.command = command
+        self.address = 0
 
     def dump(self): return self.command.dump()
 

@@ -27,8 +27,10 @@ class Memory(IMemory):
         self._inner_memory = []
         self._length = memory_length
 
-        for _ in range(self._length):
-            self._inner_memory.append(to_word('____'))
+        for address in range(self._length):
+            word = to_word('____')
+            word.address = address
+            self._inner_memory.append(word)
 
         self._pos = 0
 
