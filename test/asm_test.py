@@ -135,6 +135,58 @@ class AssemblyTest(unittest.TestCase):
 
         self.assertEqual(literal_array, [self.vm.memory.access(i).command.execute() for i in range(300, 350)])
 
+    def test_multiple_processes(self):
+        """
+        Test loading multiple processes on the memory
+        """
+
+        import random
+
+        # Pollute the memory
+        for i in random.sample(range(1, self.vm.memory._frame_amount), self.vm.memory._frame_amount // 2):
+            frame = self.vm.memory._frames[i]
+            frame.is_free = False
+            frame.owner = random.randint(10, 200)
+
+        p2_pid = self.vm.load_from_file(Path('example_programs/p2.asm'))
+        p3_pid = self.vm.load_from_file(Path('example_programs/p3.asm'))
+        #  Load the same program twice
+        p3_2_pid = self.vm.load_from_file(Path('example_programs/p3.asm'))
+
+        def nothing(s):
+            pass
+
+        # Don't dealloc() frames, don't zero the memory on alloc()
+        self.vm.memory.deallocate = nothing
+        self.vm.memory.zero_memory_in_frame = nothing
+
+        self.vm.start()
+        self.vm.join()
+
+        print('VM ended')
+
+        # P2 ASM:
+        self.vm.memory._curr_process = self.vm.memory._processes[p2_pid]
+        amount = self.vm.memory.access(1).command.p
+        start_address = self.vm.memory.access(2).command.p
+
+        for address, result in [(start_address, amount),
+                                *zip([x + start_address + 1 for x in range(amount)], fibonacci(length=amount))]:
+            with self.subTest(address=address, result=result):
+                self.assertEqual(self.vm.memory.access(address).command.execute(), result)
+
+        # P3 ASM:
+        # DATA 720: 3rd pos in last frame
+        p3_proc = self.vm.memory._processes[p3_pid]
+        last_frame = p3_proc.frames[-1]
+        self.assertEqual(last_frame.addresses[2].command.execute(), 720)
+
+        # P3 (SECOND INSTANCE) ASM:
+        # DATA 720: 3rd pos in last frame
+        p3_proc = self.vm.memory._processes[p3_2_pid]
+        last_frame = p3_proc.frames[-1]
+        self.assertEqual(last_frame.addresses[2].command.execute(), 720)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -38,6 +38,7 @@ class Cpu(ICpu):
         self.__program_counter = Register(0)
         self.__instruction_register = None
         self.__interruption_queue = Queue()  # Infinitely big interruption queue
+        self.last_pc_value = 0  # Used in the memory dumping mechanism
 
     @property
     def pc(self):
@@ -60,6 +61,9 @@ class Cpu(ICpu):
         end_loop = False
         print('CPU: Start loop')
         while True:
+            # Default to False on every loop
+            skip_pc_increment = False
+
             # Access the memory address stored in PC
             _curr_address = self.pc.value
 
@@ -84,9 +88,15 @@ class Cpu(ICpu):
                 elif isinstance(interrupt, EProgramEnd):  # STOP instruction
                     print('STOP received. Ending process.')
                     self.owner.memory.end_current_process()
+                    # Process changing routine
+                    self.reset()
+                    skip_pc_increment = True
                     continue
                 elif isinstance(interrupt, EShutdown):
-                    print('No more processes are scheduled. Shutting down...')
+                    self.pc.value = self.last_pc_value
+                    print('Shutting down...')
+                else:
+                    print(f'Error: {interrupt}')
 
                 # Some other exception (interruption) occurred, end the program execution
                 with self.__interruption_queue.mutex:  # Guarantee thread-safety
@@ -97,7 +107,7 @@ class Cpu(ICpu):
             if end_loop:  # End loop before incrementing PC to dump the correct memory data
                 break
 
-            if self.pc.value == _curr_address:
+            if (not skip_pc_increment) and (self.pc.value == _curr_address):
                 self.pc.value += 1
         print('CPU: End')
 
@@ -113,3 +123,7 @@ class Cpu(ICpu):
 
     def queue_interrupt(self, interrupt):
         self.__interruption_queue.put(interrupt)
+
+    def reset(self):
+        self.last_pc_value = self.__program_counter.value
+        self.__program_counter.value = 0
