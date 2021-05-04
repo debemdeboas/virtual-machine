@@ -196,13 +196,24 @@ class MemoryManager(Memory):
         super(MemoryManager, self).save(command, absolute_address)
 
     def dump_list(self):
-        res = ['---- Memory data ----\n', '[ ADDRESS ][ FRAME INDEX ][ FRAME OWNER ] ORIGINAL COMMAND | COMMAND\n']
+        process_begin = '-------------------------------- BEGIN PROCESS ---------------------------------\n'
+        process_end = '--------------------------------- END PROCESS ----------------------------------\n'
+        pcb_data = ['---- PROCESS DATA ----\n']
+        for process in self._processes:
+            pcb_data.append(process_begin)
+            pcb_data.extend(process.dump())
+            pcb_data.append(process_end)
+        pcb_data.append('\n---- ---- ----\n\n')
+
+        memory_data = ['---- MEMORY DATA ----\n', '[ ADDRESS ][ FRAME INDEX ][ FRAME OWNER ] ORIGINAL COMMAND | '
+                                                  'COMMAND\n']
         for index, word in enumerate(self._inner_memory):
             command = word.command
             frame_index = index // self._page_size
             frame = self._frames[frame_index]
-            res.append(f'[0x{index:3x}][0x{frame_index:2x}][{frame.owner:3}]\t{command.original:99} | {command.dump()}\n')
-        return res
+            memory_data.append(f'[0x{index:3x}][0x{frame_index:2x}][{frame.owner:3}]\t{command.original:99} | '
+                               f'{command.dump()}\n')
+        return pcb_data + memory_data
 
     def zero_memory_in_frame(self, frame):
         for address in frame.addresses:
