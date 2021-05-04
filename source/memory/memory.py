@@ -41,7 +41,7 @@ class Memory(IMemory):
         res = ['---- Memory data ----\n']
         for index, word in enumerate(self._inner_memory):
             command = word.command
-            res.append(f'[{index:4d}]\t{command.dump():25} | {command.original:30}\n')
+            res.append(f'[0x{index:3x}]\t{command.dump():25} | {command.original}\n')
         return res
 
     def access(self, address):
