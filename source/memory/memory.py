@@ -66,6 +66,7 @@ class IMemoryManager(IMemory):
     @abstractmethod
     def allocate(self, number_of_words: int, owner_pid: int) -> List[Frame]: ...
 
+    @staticmethod
     @abstractmethod
     def deallocate(self, frames): ...
 
@@ -86,7 +87,6 @@ class MemoryManager(Memory):
             index += 1
             self._frames.append(frame)
 
-        self._curr_frame = (0, self._frames[0])
         self._processes: List[ProcessControlBlock] = []
         self._pid_table: Dict[int] = {}
         self._pid_gen = count(0)
@@ -109,31 +109,36 @@ class MemoryManager(Memory):
             print(E)
             return
 
-        # Mark frames as not free
+        # Zero the memory
         for frame in frames:
-            for address in frame.addresses:
-                # Zero the memory
-                address.command = to_word('____')
-            frame.is_free = False
+            frame.owner = owner_pid
+            self.zero_memory_in_frame(frame)
 
         return frames
 
-    @staticmethod
-    def deallocate(frames):
+    def deallocate(self, frames):
         # Mark each position in the given frames as free
         for frame in frames:
             frame.is_free = True
+            # Don't re-write the owner
+            # frame.owner = 0  # System owns this frame now
 
     def end_current_process(self):
         process = self._curr_process
         self.deallocate(process.frames)
-        next_process = self._processes[int(self._pid_gen.__repr__()[5:].replace('(', '').replace(')', '')) - 1]
-        if next_process == self._curr_process:
-            print('No more processes. Ending CPU loop.')
-            self.owner.cpu.queue_interrupt(EShutdown)
-        self._curr_process = next_process
-        print(f'Process {process.name} ended')
-        del process
+
+        next_process_pid = process.pid + 1
+        try:
+            if next_process_pid >= len(self._processes) or self._processes[next_process_pid] == self._curr_process:
+                print('No more processes. Ending CPU loop.')
+                self.owner.cpu.queue_interrupt(EShutdown())
+            else:
+                next_process = self._processes[next_process_pid]
+                self._curr_process = next_process
+            print(f'Process {process.name} ended')
+        except Exception as E:
+            print('A fatal exception has occurred. Ending CPU loop.')
+            self.owner.cpu.queue_interrupt(EShutdown(str(E)))
 
     def create_process(self, process_name, code):
         pid = next(self._pid_gen)
@@ -142,7 +147,7 @@ class MemoryManager(Memory):
             if command := to_word(line.lstrip(' ').lstrip('\t')):
                 commands.append(command)
         process_size = len(commands)
-        process_frames = self.allocate(process_size)
+        process_frames = self.allocate(process_size, pid)
 
         # Load code into memory
 
@@ -152,8 +157,9 @@ class MemoryManager(Memory):
 
         divided_commands = list(divide_chunks(commands, self._page_size))
 
-        for frame, memory in zip(process_frames, divided_commands):
-            for address, word in zip(frame.addresses, memory):
+        # Load commands into the memory frames
+        for frame, commands_per_frame in zip(process_frames, divided_commands):
+            for address, word in zip(frame.addresses, commands_per_frame):
                 address.command = word.command
 
         process = ProcessControlBlock(f'{process_name.replace(" ", "")}_{pid}', pid, process_frames, process_size)
@@ -163,15 +169,10 @@ class MemoryManager(Memory):
 
     def get_next_free_frame(self) -> Frame:
         # Return the next free frame
-        if self._curr_frame[1].is_free:
-            frame_index = self._curr_frame[0]
-            self._curr_frame = (frame_index + 1, self._frames[frame_index + 1])
-            return self._frames[frame_index]
-        else:
-            for index, frame in enumerate(self._frames):
-                if frame.is_free:
-                    self._curr_frame = (index + 1, self._frames[index + 1])
-                    return frame
+        for frame in self._frames:
+            if frame.is_free:
+                frame.is_free = False
+                return frame
         raise Exception('Out of memory')
 
     def relative_to_absolute_address(self, address: int) -> int:
@@ -188,7 +189,21 @@ class MemoryManager(Memory):
         try:
             self.relative_to_absolute_address(address)
         except IndexError:  # Need to allocate more frames for this process
-            new_frames = self.allocate(((address // self._page_size) - len(self._curr_process.frames)) * self._page_size + 1)
+            extra_words = ((address // self._page_size) - len(self._curr_process.frames)) * self._page_size + 1
+            new_frames = self.allocate(extra_words, self._curr_process.pid)
             self._curr_process.frames.extend(new_frames)
         absolute_address = self.relative_to_absolute_address(address)
         super(MemoryManager, self).save(command, absolute_address)
+
+    def dump_list(self):
+        res = ['---- Memory data ----\n', '[ ADDRESS ][ FRAME INDEX ][ FRAME OWNER ] ORIGINAL COMMAND | COMMAND\n']
+        for index, word in enumerate(self._inner_memory):
+            command = word.command
+            frame_index = index // self._page_size
+            frame = self._frames[frame_index]
+            res.append(f'[0x{index:3x}][0x{frame_index:2x}][{frame.owner:3}]\t{command.original:99} | {command.dump()}\n')
+        return res
+
+    def zero_memory_in_frame(self, frame):
+        for address in frame.addresses:
+            address.command = to_word('____')
