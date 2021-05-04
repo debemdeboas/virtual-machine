@@ -1,3 +1,6 @@
+from typing import List
+
+
 class Process:
     def __init__(self, name, _id):
         self.name = name
@@ -18,5 +21,12 @@ class ProcessControlBlock(Process):
     def resume(self):
         pass
 
-    def next(self):
-        pass
+    def dump(self) -> List[str]:
+        return [
+            f'|\tNAME: {self.name:<69}|\n',
+            f'|\tPID: {self.pid:<70}|\n',
+            f'|\tSIZE: {self.process_size:<69}|\n',
+            f'|\tNUM. FRAMES: {len(self.frames):<62}|\n',
+            f'|\tCURRENT_FRAME: {self.current_frame:<60}|\n',
+            f'|\tCURRENT_OFFSET: {self.current_offset:<59}|\n',
+        ]
