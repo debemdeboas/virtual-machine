@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict
 from itertools import count
+from typing import List, Dict
 
 from source.command.command import to_word, EInvalidAddress, EShutdown
 from source.memory.frame import Frame
@@ -93,6 +93,13 @@ class MemoryManager(Memory):
 
         self.create_process('system', ['STOP'])
         self._curr_process = self._processes[0]
+        self.set_current_process(self._processes[0])
+
+    def set_current_process(self, next_process):
+        self._curr_process.suspend()
+        self._curr_process = next_process
+        # TODO: check if process is ready
+        self._curr_process.resume()
 
     def allocate(self, number_of_words, owner_pid):
         # "I wish to allocate this number of words"
@@ -116,12 +123,18 @@ class MemoryManager(Memory):
 
         return frames
 
-    def deallocate(self, frames):
+    @staticmethod
+    def deallocate(frames):
         # Mark each position in the given frames as free
         for frame in frames:
             frame.is_free = True
             # Don't re-write the owner
             # frame.owner = 0  # System owns this frame now
+
+    @staticmethod
+    def zero_memory_in_frame(frame):
+        for address in frame.addresses:
+            address.command = to_word('____')
 
     def end_current_process(self):
         process = self._curr_process
@@ -134,7 +147,7 @@ class MemoryManager(Memory):
                 self.owner.cpu.queue_interrupt(EShutdown())
             else:
                 next_process = self._processes[next_process_pid]
-                self._curr_process = next_process
+                self.set_current_process(next_process)
             print(f'Process {process.name} ended')
         except Exception as E:
             print('A fatal exception has occurred. Ending CPU loop.')
@@ -165,6 +178,7 @@ class MemoryManager(Memory):
         process = ProcessControlBlock(f'{process_name.replace(" ", "")}_{pid}', pid, process_frames, process_size)
         self._processes.append(process)
         self._pid_table[process.pid] = len(self._processes) - 1
+        process.ready = True
         return process.pid
 
     def get_next_free_frame(self) -> Frame:
@@ -214,7 +228,3 @@ class MemoryManager(Memory):
             memory_data.append(f'[0x{index:3x}][0x{frame_index:2x}][{frame.owner:3}]\t{command.original:99} | '
                                f'{command.dump()}\n')
         return pcb_data + memory_data
-
-    def zero_memory_in_frame(self, frame):
-        for address in frame.addresses:
-            address.command = to_word('____')

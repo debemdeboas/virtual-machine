@@ -5,6 +5,8 @@ class Process:
     def __init__(self, name, _id):
         self.name = name
         self.pid = _id
+        self.ready = False
+        self.running = False
 
 
 class ProcessControlBlock(Process):
@@ -16,9 +18,13 @@ class ProcessControlBlock(Process):
         self.frames = frames
 
     def suspend(self):
+        self.running = False
+        self.ready = False  # Only set ready to True on the end of this method
         pass
 
     def resume(self):
+        self.running = True
+        self.ready = True
         pass
 
     def dump(self) -> List[str]:
