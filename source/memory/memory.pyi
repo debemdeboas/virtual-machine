@@ -56,6 +56,7 @@ class MemoryManager(IMemoryManager, Memory):
     _processes: List
     _pid_gen: Any
     _pid_table: Dict
+    _curr_process: Any
 
     def __init__(self, owner: IVirtualMachine, memory_length: int, page_size: int): ...
 
@@ -68,3 +69,5 @@ class MemoryManager(IMemoryManager, Memory):
     def get_next_free_frame(self) -> Frame: ...
 
     def end_current_process(self): ...
+
+    def set_current_process(self, next_process): ...
