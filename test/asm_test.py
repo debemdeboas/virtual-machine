@@ -11,27 +11,28 @@ from source.vm.virtual_machine import VirtualMachine
 class AssemblyTest(unittest.TestCase):
     def setUp(self) -> None:
         self.vm = VirtualMachine(mem_size=4096)
+        self.path = ''
 
     def test_fibonacci(self):
         """
         Test the Fibonacci sequence generator assembly file
         """
 
-        self.vm.load_from_file(Path('example_programs/fibonacci.asm'))
+        self.vm.load_from_file(Path(self.path + 'example_programs/fibonacci.asm'))
         self.vm.start()
         self.vm.join()
 
         # Test Fibonacci sequence
         for address, result in [(50, 0), (51, 1), (58, 21), (59, 34)]:
             with self.subTest(address=address, result=result):
-                self.assertEqual(self.vm.memory.access(address).command.execute(), result)
+                self.assertEqual(result, self.vm.memory.access(address).command.execute())
 
     def test_p2(self):
         """
         Test the P2 assembly file, which should write `n` Fibonacci values
         """
 
-        self.vm.load_from_file(Path('example_programs/p2.asm'))
+        self.vm.load_from_file(Path(self.path + 'example_programs/p2.asm'))
         self.vm.start()
         self.vm.join()
 
@@ -53,7 +54,7 @@ class AssemblyTest(unittest.TestCase):
         Mock user input with the `mock` module and use `amount` parameter as fibonacci length
         """
 
-        self.vm.load_from_file(Path('example_programs/p2_traps.asm'))
+        self.vm.load_from_file(Path(self.path + 'example_programs/p2_traps.asm'))
 
         fib_amount = amount
 
@@ -77,7 +78,7 @@ class AssemblyTest(unittest.TestCase):
 
         import math
 
-        self.vm.load_from_file(Path('example_programs/p3.asm'))
+        self.vm.load_from_file(Path(self.path + 'example_programs/p3.asm'))
 
         self.vm.start()
         self.vm.join()
@@ -89,7 +90,7 @@ class AssemblyTest(unittest.TestCase):
         else:
             factorial = math.factorial(number)
 
-        self.assertEqual(self.vm.memory.access(50).command.execute(), factorial)
+        self.assertEqual(factorial, self.vm.memory.access(50).command.execute())
 
     @parameterized.expand([
         (5,), (6,), (-2,), (0,)
@@ -103,7 +104,7 @@ class AssemblyTest(unittest.TestCase):
 
         import math
 
-        self.vm.load_from_file(Path('example_programs/p3_traps.asm'))
+        self.vm.load_from_file(Path(self.path + 'example_programs/p3_traps.asm'))
 
         with mock.patch('builtins.input', return_value=number):
             self.vm.start()
@@ -128,7 +129,7 @@ class AssemblyTest(unittest.TestCase):
                          182, 54, 77, 107, 197, 81, 100]
         literal_array.sort()
 
-        self.vm.load_from_file(Path('example_programs/p4.asm'))
+        self.vm.load_from_file(Path(self.path + 'example_programs/p4.asm'))
 
         self.vm.start()
         self.vm.join()
@@ -148,10 +149,10 @@ class AssemblyTest(unittest.TestCase):
             frame.is_free = False
             frame.owner = random.randint(10, 200)
 
-        p2_pid = self.vm.load_from_file(Path('example_programs/p2.asm'))
-        p3_pid = self.vm.load_from_file(Path('example_programs/p3.asm'))
+        p2_pid = self.vm.load_from_file(Path(self.path + 'example_programs/p2.asm'))
+        p3_pid = self.vm.load_from_file(Path(self.path + 'example_programs/p3.asm'))
         #  Load the same program twice
-        p3_2_pid = self.vm.load_from_file(Path('example_programs/p3.asm'))
+        p3_2_pid = self.vm.load_from_file(Path(self.path + 'example_programs/p3.asm'))
 
         def nothing(s):
             pass
@@ -173,19 +174,19 @@ class AssemblyTest(unittest.TestCase):
         for address, result in [(start_address, amount),
                                 *zip([x + start_address + 1 for x in range(amount)], fibonacci(length=amount))]:
             with self.subTest(address=address, result=result):
-                self.assertEqual(self.vm.memory.access(address).command.execute(), result)
+                self.assertEqual(result, self.vm.memory.access(address).command.execute())
 
         # P3 ASM:
         # DATA 720: 3rd pos in last frame
         p3_proc = self.vm.memory._processes[p3_pid]
         last_frame = p3_proc.frames[-1]
-        self.assertEqual(last_frame.addresses[2].command.execute(), 720)
+        self.assertEqual(720, last_frame.addresses[2].command.execute())
 
         # P3 (SECOND INSTANCE) ASM:
         # DATA 720: 3rd pos in last frame
         p3_proc = self.vm.memory._processes[p3_2_pid]
         last_frame = p3_proc.frames[-1]
-        self.assertEqual(last_frame.addresses[2].command.execute(), 720)
+        self.assertEqual(720, last_frame.addresses[2].command.execute())
 
 
 if __name__ == '__main__':
