@@ -37,6 +37,8 @@ class Cpu(ICpu):
     __instruction_register: Union[IWord, None]
     __interruption_queue: Queue
 
+    current_process_instruction_count: int
+
     def __init__(self, owner: IVirtualMachine): ...
 
     @property
