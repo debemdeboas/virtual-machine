@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from itertools import count
 from typing import List, Dict
+from queue import Queue
 
 from source.command.command import to_word, EInvalidAddress, EShutdown
 from source.memory.frame import Frame
@@ -72,6 +73,19 @@ class IMemoryManager(IMemory):
 
 
 class MemoryManager(Memory):
+    @staticmethod
+    def deallocate(frames):
+        # Mark each position in the given frames as free
+        for frame in frames:
+            frame.is_free = True
+            # Don't re-write the owner
+            # frame.owner = 0  # System owns this frame now
+
+    @staticmethod
+    def zero_memory_in_frame(frame):
+        for address in frame.addresses:
+            address.command = to_word('____')
+
     def __init__(self, owner, memory_length, page_size):
         super().__init__(owner, memory_length)
 
@@ -90,22 +104,47 @@ class MemoryManager(Memory):
         self._processes: List[ProcessControlBlock] = []
         self._pid_table: Dict[int] = {}
         self._pid_gen = count(0)
+        self.process_queue = Queue()
 
         self.create_process('system', ['STOP'])
         self._curr_process = self._processes[0]
-        self.set_current_process(self._processes[0])
+        self.process_queue.queue.clear()
 
     def set_current_process(self, next_process):
-        self._curr_process.suspend()
         self._curr_process = next_process
         # TODO: check if process is ready
-        self._curr_process.resume()
+        self._curr_process.resume(self.owner.cpu.pc, self.owner.cpu.registers)
+
+    def cpu_schedule_next_process(self, should_increment_pc):
+        # Suspend the current process
+        old_process = self._curr_process
+        old_process.suspend(self.owner.cpu.pc, self.owner.cpu.registers, should_increment_pc)
+        # Add suspended process to the CPU queue
+        self.process_queue.put(old_process)
+        # Choose the next process from the ready queue
+        # Restore the CPU process of the next process
+        self.schedule_next_process()
+        # Give back control to the CPU
+        return
+
+    def schedule_next_process(self):
+        process = self._curr_process
+        try:
+            if self.process_queue.qsize() > 0:
+                self.set_current_process(self.process_queue.get_nowait())
+            else:
+                print('No more processes. Ending CPU loop.')
+                self.owner.cpu.queue_interrupt(EShutdown())
+            print(f'Process {process.name} has exited the CPU')
+            print(f'Process {self._curr_process.name} has entered the CPU')
+        except Exception as E:
+            print('A fatal exception has occurred. Ending CPU loop.')
+            self.owner.cpu.queue_interrupt(EShutdown(str(E)))
 
     def allocate(self, number_of_words, owner_pid):
         # "I wish to allocate this number of words"
         # First, check if there is enough free size on the memory
         # Then, return the list of allocated frames
-
         from math import ceil
 
         needed_frames = ceil(number_of_words / self._page_size)
@@ -123,35 +162,12 @@ class MemoryManager(Memory):
 
         return frames
 
-    @staticmethod
-    def deallocate(frames):
-        # Mark each position in the given frames as free
-        for frame in frames:
-            frame.is_free = True
-            # Don't re-write the owner
-            # frame.owner = 0  # System owns this frame now
-
-    @staticmethod
-    def zero_memory_in_frame(frame):
-        for address in frame.addresses:
-            address.command = to_word('____')
-
     def end_current_process(self):
         process = self._curr_process
+        p_name = process.name
+        print(f'Process {p_name} has ended')
+        self.schedule_next_process()
         self.deallocate(process.frames)
-
-        next_process_pid = process.pid + 1
-        try:
-            if next_process_pid >= len(self._processes) or self._processes[next_process_pid] == self._curr_process:
-                print('No more processes. Ending CPU loop.')
-                self.owner.cpu.queue_interrupt(EShutdown())
-            else:
-                next_process = self._processes[next_process_pid]
-                self.set_current_process(next_process)
-            print(f'Process {process.name} ended')
-        except Exception as E:
-            print('A fatal exception has occurred. Ending CPU loop.')
-            self.owner.cpu.queue_interrupt(EShutdown(str(E)))
 
     def create_process(self, process_name, code):
         pid = next(self._pid_gen)
@@ -178,6 +194,7 @@ class MemoryManager(Memory):
         process = ProcessControlBlock(f'{process_name.replace(" ", "")}_{pid}', pid, process_frames, process_size)
         self._processes.append(process)
         self._pid_table[process.pid] = len(self._processes) - 1
+        self.process_queue.put(process)
         process.ready = True
         return process.pid
 
@@ -196,6 +213,9 @@ class MemoryManager(Memory):
 
     def access(self, address):
         # Address is a relative address for the current process
+        self._curr_process.current_frame = address // self._page_size
+        self._curr_process.current_offset = address % self._page_size
+
         absolute_address = self.relative_to_absolute_address(address)
         return self._inner_memory[absolute_address]
 

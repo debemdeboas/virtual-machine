@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from queue import Queue
 from typing import List, TextIO, Any, Dict
 
 from source.vm.virtual_machine import IVirtualMachine
@@ -57,6 +58,7 @@ class MemoryManager(IMemoryManager, Memory):
     _pid_gen: Any
     _pid_table: Dict
     _curr_process: Any
+    process_queue: Queue
 
     def __init__(self, owner: IVirtualMachine, memory_length: int, page_size: int): ...
 
