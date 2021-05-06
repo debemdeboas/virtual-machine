@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from queue import Queue
 
-from source.command.command import ETrap, EProgramEnd, EShutdown
+from source.command.command import ETrap, EProgramEnd, EShutdown, ESignalVirtualAlarm
 from source.register.register import Register
 
 
@@ -39,6 +39,7 @@ class Cpu(ICpu):
         self.__instruction_register = None
         self.__interruption_queue = Queue()  # Infinitely big interruption queue
         self.last_pc_value = 0  # Used in the memory dumping mechanism
+        self.current_process_instruction_count = 0
 
     @property
     def pc(self):
@@ -79,6 +80,11 @@ class Cpu(ICpu):
             # Execute the command
             self.__instruction_register.command.execute()
 
+            if self.current_process_instruction_count >= ESignalVirtualAlarm.SIGVTALRM_THRESHOLD:
+                self.queue_interrupt(ESignalVirtualAlarm())
+            else:
+                self.current_process_instruction_count += 1
+
             # Check for any interruptions
             while self.__interruption_queue.qsize() > 0:
                 interrupt = self.__interruption_queue.get_nowait()
@@ -87,14 +93,20 @@ class Cpu(ICpu):
                     continue
                 elif isinstance(interrupt, EProgramEnd):  # STOP instruction
                     print('STOP received. Ending process.')
+                    self.reset()
                     self.owner.memory.end_current_process()
                     # Process changing routine
-                    self.reset()
                     skip_pc_increment = True
                     continue
                 elif isinstance(interrupt, EShutdown):
                     self.pc.value = self.last_pc_value
                     print('Shutting down...')
+                elif isinstance(interrupt, ESignalVirtualAlarm):
+                    # Give way to another process
+                    self.owner.memory.cpu_schedule_next_process(self.pc.value == _curr_address)
+                    self.current_process_instruction_count = 0
+                    skip_pc_increment = True
+                    continue
                 else:
                     print(f'Error: {interrupt}')
 
@@ -127,3 +139,4 @@ class Cpu(ICpu):
     def reset(self):
         self.last_pc_value = self.__program_counter.value
         self.__program_counter.value = 0
+        self.current_process_instruction_count = 0
