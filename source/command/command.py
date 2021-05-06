@@ -82,6 +82,20 @@ class EShutdown(Exception):
     pass
 
 
+class ESignalVirtualAlarm(Exception):
+    """
+    Signals the CPU to suspend the current process
+
+    This interruption in thrown by the CPU after a process has executed a certain number of instructions.
+    These instructions are loosely tied to a CPU's cycles.
+
+    Halts the current process and gives way to the next process on the process queue.
+    """
+    SIGVTALRM_THRESHOLD = 5
+
+    pass
+
+
 class BaseCommand(IBaseCommand):
     """
     Base Command class
