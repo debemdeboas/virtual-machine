@@ -112,7 +112,6 @@ class MemoryManager(Memory):
 
     def set_current_process(self, next_process):
         self._curr_process = next_process
-        # TODO: check if process is ready
         self._curr_process.resume(self.owner.cpu.pc, self.owner.cpu.registers)
 
     def cpu_schedule_next_process(self, should_increment_pc):
