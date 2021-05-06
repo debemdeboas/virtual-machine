@@ -79,6 +79,8 @@ command has ended. The interruption classes are as follows:
 |`EInvalidAddress`      | There was an attempt to access an illegal memory area |
 |`EProgramEnd`          | A `STOP` command was issued |
 |`EMathOverflowError`   | An overflow has occurred |
+|`EShutdown`            | End the CPU loop, no more processes are available |
+|`ESignalVirtualAlarm`  | SIGVTALRM clock interruption |
 
 
 ## Usage
@@ -106,5 +108,27 @@ python3 main.py foo.asm
 
 This will load the program `foo.asm` into the virtual memory and evaluate the program execution step by step.
 
-If you do not wish to see the step-by-step evaluation of the program, open `main.py` and remove the `#` (comment) sign
-from `text = None`. This will stop Tkinter from opening.
+~~If you do not wish to see the step-by-step evaluation of the program, open `main.py` and remove the `#` (comment) sign
+from `text = None`. This will stop Tkinter from opening.~~ The Tkinter interface will be removed in a future release.
+
+## Tests
+
+This repository contains extensive tests for the virtual machine system.
+Most programs in the `example_programs/` folder have tests testing their functionality.
+
+The tests file is called `asm_test.py` and is contained in the `tests/` folder.
+
+To run all tests:
+
+```commandline
+python3 -m pytest
+```
+
+To run a specific test (from this repository's root directory):
+```commandline
+python3 -m pytest test/asm_test.py::AssemblyTest::{{ desired test name goes here }}
+# For example, to run the P2 file test:
+python3 -m pytest test/asm_test.py::AssemblyTest::test_p2 
+```
+
+The "desired test name" is the name of the function defined in the `asm_test.py` script.
