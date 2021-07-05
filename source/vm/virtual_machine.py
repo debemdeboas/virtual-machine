@@ -7,7 +7,7 @@ from pathlib import Path
 from pyfiglet import figlet_format
 
 from source.cpu.cpu import Cpu
-from source.memory.memory import MemoryManager
+from source.memory.memory import MemoryManager, ProcessManager
 
 
 class IVirtualMachine(ABC, threading.Thread):
@@ -49,6 +49,7 @@ class VirtualMachine(IVirtualMachine):
 
         self._cpu = Cpu(self)
         self._memory = MemoryManager(self, mem_size, 16)
+        self._process_manager = ProcessManager(self)
         self.tk = tk
         if self.tk is not None:
             self.tk.tag_configure('current_command', background='misty rose')
@@ -62,13 +63,17 @@ class VirtualMachine(IVirtualMachine):
     @property
     def cpu(self):
         return self._cpu
+    
+    @property
+    def process_manager(self):
+        return self._process_manager
 
     def load_from_file(self, file: Path):
         with open(file, 'r') as f:
             lines = f.readlines()
         # Close the file as soon as possible to free the disk
         # Also use an auxiliary list to get its len()
-        pid = self._memory.create_process(file.name, lines)
+        pid = self._process_manager.create_process(file.name, lines)
         print(f'Loaded process {file.name} into memory. PID: {pid}')
         return pid
 
@@ -118,4 +123,5 @@ class VirtualMachine(IVirtualMachine):
                 f.write(figlet_format('----------', font='cybermedium', width=120))
                 f.write(figlet_format('Memory', font='cybermedium', width=120))
                 # Dump memory
+                self.process_manager.dump(f)
                 self.memory.dump(f)

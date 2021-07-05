@@ -55,7 +55,8 @@ class Cpu(ICpu):
             'mem': self.owner.memory,
             'pc': self.__program_counter,
             'registers': self.registers,
-            'interrupt': self.queue_interrupt,  # Method pointer to the CPU's interruption queue
+            'interrupt': self.queue_interrupt,  # Method pointer to the CPU's interruption queue,
+            'process_manager': self.owner.process_manager,  # Reference to the VM's process manager
         }
 
     def loop(self):
@@ -69,7 +70,7 @@ class Cpu(ICpu):
             _curr_address = self.pc.value
 
             # Set IR to the command pointed by PC
-            self.__instruction_register = self.owner.memory.access(int(_curr_address))
+            self.__instruction_register = self.owner.process_manager.access(int(_curr_address))
 
             # Load the command instance with CPU registers, memory and PC
             self.__instruction_register.command.set_instance_params(**self.command_params)
@@ -94,7 +95,7 @@ class Cpu(ICpu):
                 elif isinstance(interrupt, EProgramEnd):  # STOP instruction
                     print('STOP received. Ending process.')
                     self.reset()
-                    self.owner.memory.end_current_process()
+                    self.owner.process_manager.end_current_process()
                     # Process changing routine
                     skip_pc_increment = True
                     continue
@@ -103,7 +104,7 @@ class Cpu(ICpu):
                     print('Shutting down...')
                 elif isinstance(interrupt, ESignalVirtualAlarm):
                     # Give way to another process
-                    self.owner.memory.cpu_schedule_next_process(self.pc.value == _curr_address)
+                    self.owner.process_manager.cpu_schedule_next_process(self.pc.value == _curr_address)
                     self.current_process_instruction_count = 0
                     skip_pc_increment = True
                     continue
