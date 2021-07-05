@@ -25,7 +25,7 @@ class AssemblyTest(unittest.TestCase):
         # Test Fibonacci sequence
         for address, result in [(50, 0), (51, 1), (58, 21), (59, 34)]:
             with self.subTest(address=address, result=result):
-                self.assertEqual(result, self.vm.memory.access(address).command.execute())
+                self.assertEqual(result, self.vm.process_manager.access(address).command.execute())
 
     def test_p2(self):
         """
@@ -42,7 +42,7 @@ class AssemblyTest(unittest.TestCase):
         for address, result in [(start_address, amount),
                                 *zip([x + start_address + 1 for x in range(amount)], fibonacci(length=amount))]:
             with self.subTest(address=address, result=result):
-                self.assertEqual(self.vm.memory.access(address).command.execute(), result)
+                self.assertEqual(self.vm.process_manager.access(address).command.execute(), result)
 
     @parameterized.expand([
         (3,), (5,), (20,)
@@ -67,7 +67,7 @@ class AssemblyTest(unittest.TestCase):
         for address, result in [(start_address, fib_amount),
                                 *zip([x + start_address + 1 for x in range(fib_amount)], fibonacci(length=fib_amount))]:
             with self.subTest(address=address, result=result):
-                self.assertEqual(self.vm.memory.access(address).command.execute(), result)
+                self.assertEqual(self.vm.process_manager.access(address).command.execute(), result)
 
     def test_p3(self):
         """
@@ -90,7 +90,7 @@ class AssemblyTest(unittest.TestCase):
         else:
             factorial = math.factorial(number)
 
-        self.assertEqual(factorial, self.vm.memory.access(50).command.execute())
+        self.assertEqual(factorial, self.vm.process_manager.access(50).command.execute())
 
     @parameterized.expand([
         (5,), (6,), (-2,), (0,)
@@ -115,7 +115,7 @@ class AssemblyTest(unittest.TestCase):
         else:
             factorial = math.factorial(number)
 
-        self.assertEqual(self.vm.memory.access(50).command.execute(), factorial)
+        self.assertEqual(self.vm.process_manager.access(50).command.execute(), factorial)
 
     def test_p4(self):
         """
@@ -134,7 +134,7 @@ class AssemblyTest(unittest.TestCase):
         self.vm.start()
         self.vm.join()
 
-        self.assertEqual(literal_array, [self.vm.memory.access(i).command.execute() for i in range(300, 350)])
+        self.assertEqual(literal_array, [self.vm.process_manager.access(i).command.execute() for i in range(300, 350)])
 
     def test_multiple_processes(self):
         """
@@ -167,24 +167,24 @@ class AssemblyTest(unittest.TestCase):
         print('VM ended')
 
         # P2 ASM:
-        self.vm.memory._curr_process = self.vm.memory._processes[p2_pid]
-        amount = self.vm.memory.access(1).command.p
-        start_address = self.vm.memory.access(2).command.p
+        self.vm.process_manager._curr_process = self.vm.process_manager._processes[p2_pid]
+        amount = self.vm.process_manager.access(1).command.p
+        start_address = self.vm.process_manager.access(2).command.p
 
         for address, result in [(start_address, amount),
                                 *zip([x + start_address + 1 for x in range(amount)], fibonacci(length=amount))]:
             with self.subTest(address=address, result=result):
-                self.assertEqual(result, self.vm.memory.access(address).command.execute())
+                self.assertEqual(result, self.vm.process_manager.access(address).command.execute())
 
         # P3 ASM:
         # DATA 720: 3rd pos in last frame
-        p3_proc = self.vm.memory._processes[p3_pid]
+        p3_proc = self.vm.process_manager._processes[p3_pid]
         last_frame = p3_proc.frames[-1]
         self.assertEqual(720, last_frame.addresses[2].command.execute())
 
         # P3 (SECOND INSTANCE) ASM:
         # DATA 720: 3rd pos in last frame
-        p3_proc = self.vm.memory._processes[p3_2_pid]
+        p3_proc = self.vm.process_manager._processes[p3_2_pid]
         last_frame = p3_proc.frames[-1]
         self.assertEqual(720, last_frame.addresses[2].command.execute())
 

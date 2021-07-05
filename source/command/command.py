@@ -310,7 +310,7 @@ class Command_JMPIM(BaseCommand):
         super().__init__('JMPIM', *args)
 
     def execute(self):
-        word = self.mem.access(self.p)
+        word = self.process_manager.access(self.p)
         if isinstance(word.command, Command_DATA):
             self.pc.value = word.command.execute()
         else:
@@ -338,7 +338,7 @@ class Command_JMPIGM(BaseCommand):
 
     def execute(self):
         if self.r2.value > 0:
-            word = self.mem.access(self.p)
+            word = self.process_manager.access(self.p)
             if isinstance(word.command, Command_DATA):
                 self.pc.value = word.command.execute()
             else:
@@ -368,7 +368,7 @@ class Command_JMPILM(BaseCommand):
 
     def execute(self):
         if self.r2.value < 0:
-            word = self.mem.access(self.p)
+            word = self.process_manager.access(self.p)
             if isinstance(word.command, Command_DATA):
                 self.pc.value = word.command.execute()
             else:
@@ -398,7 +398,7 @@ class Command_JMPIEM(BaseCommand):
 
     def execute(self):
         if self.r2.value == 0:
-            word = self.mem.access(self.p)
+            word = self.process_manager.access(self.p)
             if isinstance(word.command, Command_DATA):
                 self.pc.value = word.command.execute()
             else:
@@ -551,7 +551,7 @@ class Command_LDD(BaseCommand):
         super().__init__('LDD', *args)
 
     def execute(self):
-        word = self.mem.access(self.p)
+        word = self.process_manager.access(self.p)
         if isinstance(word.command, Command_DATA):
             self.r1.value = word.command.execute()
         else:
@@ -575,7 +575,7 @@ class Command_STD(BaseCommand):
 
     def execute(self):
         try:
-            self.mem.save(to_word(f'DATA {self.r1.value}\n'), self.p)
+            self.process_manager.save(to_word(f'DATA {self.r1.value}\n'), self.p)
         except (EInvalidAddress, EInvalidCommand) as E:
             self.interrupt(E)
 
@@ -596,7 +596,7 @@ class Command_LDX(BaseCommand):
         super().__init__('LDX', *args)
 
     def execute(self):
-        word = self.mem.access(self.r2.value)
+        word = self.process_manager.access(self.r2.value)
         if isinstance(word.command, Command_DATA):
             self.r1.value = word.command.execute()
         else:
@@ -620,7 +620,7 @@ class Command_STX(BaseCommand):
 
     def execute(self):
         try:
-            self.mem.save(to_word(f'DATA {self.r2.value}\n'), self.r1.value)
+            self.process_manager.save(to_word(f'DATA {self.r2.value}\n'), self.r1.value)
         except (EInvalidAddress, EInvalidCommand) as E:
             self.interrupt(E)
 
@@ -682,7 +682,7 @@ class Command_TRAP(BaseCommand):
         # In a real system, this TRAP would call the keyboard driver
         word = input()
         try:
-            self.mem.save(to_word(f'DATA {int(word)}'), self.r2.value)
+            self.process_manager.save(to_word(f'DATA {int(word)}'), self.r2.value)
         except (EInvalidAddress, EInvalidCommand) as E:
             self.interrupt(E)
 
@@ -693,7 +693,7 @@ class Command_TRAP(BaseCommand):
          `printf("%d", *R8)` (not `R8` because it is a pointer to an address)
         """
 
-        word = self.mem.access(self.r2.value)
+        word = self.process_manager.access(self.r2.value)
         if isinstance(word.command, Command_DATA):
             # In a real system, this TRAP would call the graphics card driver
             print(word.command.execute())
