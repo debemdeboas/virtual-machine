@@ -36,7 +36,7 @@ class Cpu(ICpu):
             self.registers[f'r{i}'] = Register()
 
         self.__program_counter = Register(0)
-        self.__instruction_register = None
+        self.__instruction_register = ...
         self.__interruption_queue = Queue()  # Infinitely big interruption queue
         self.last_pc_value = 0  # Used in the memory dumping mechanism
         self.current_process_instruction_count = 0

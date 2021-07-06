@@ -3,6 +3,7 @@ from pathlib import Path
 
 import mock
 from fibonacci import fibonacci
+from mock import patch
 from parameterized import parameterized
 
 from source.vm.virtual_machine import VirtualMachine
@@ -58,7 +59,7 @@ class AssemblyTest(unittest.TestCase):
 
         fib_amount = amount
 
-        with mock.patch('builtins.input', return_value=fib_amount):
+        with patch('builtins.input', return_value=fib_amount):
             self.vm.start()
             self.vm.join()
 
@@ -93,7 +94,7 @@ class AssemblyTest(unittest.TestCase):
         self.assertEqual(factorial, self.vm.process_manager.access(50).command.execute())
 
     @parameterized.expand([
-        (5,), (6,), (-2,), (0,)
+        (5,), (6,), (-2,), (0,), (4,)
     ])
     def test_p3_traps(self, number):
         """
@@ -106,7 +107,7 @@ class AssemblyTest(unittest.TestCase):
 
         self.vm.load_from_file(Path(self.path + 'example_programs/p3_traps.asm'))
 
-        with mock.patch('builtins.input', return_value=number):
+        with patch('builtins.input', return_value=number):
             self.vm.start()
             self.vm.join()
 
@@ -187,6 +188,44 @@ class AssemblyTest(unittest.TestCase):
         p3_proc = self.vm.process_manager._processes[p3_2_pid]
         last_frame = p3_proc.frames[-1]
         self.assertEqual(720, last_frame.addresses[2].command.execute())
+
+
+    def test_input_scheduling(self):
+        """
+        Test various IO input calls from different processes
+
+        Use P3 Traps ASM file to calculate the factorial of the input numbers.
+        """
+
+        import math
+
+        factorials = [5, 4, 3, 2, 1]
+        results = []
+        pids = []
+
+        for fat in factorials:
+            pid = self.vm.load_from_file(Path(self.path + 'example_programs/p3_traps.asm'))
+            pids.append(pid)
+            results.append(math.factorial(fat))
+
+        def nothing(*args):
+            pass
+
+        # Don't dealloc() frames, don't zero the memory on alloc()
+        self.vm.memory.deallocate = nothing
+        self.vm.memory.zero_memory_in_frame = nothing
+
+        with patch('builtins.input', side_effect = factorials):
+            self.vm.start()
+            self.vm.join()
+
+        # Always third on last frame
+        for pid in pids:
+            proc = self.vm.process_manager._processes[pid]
+            last_frame = proc.frames[-1]
+            result = last_frame.addresses[2].command.execute()
+            self.assertIn(result, results)
+            results.remove(result)
 
 
 if __name__ == '__main__':
