@@ -58,6 +58,8 @@ class VirtualMachine(IVirtualMachine):
             self.tk.tag_configure('exception_command', background='brown2')
             self.tk.bind('<Key>', lambda _: 'break')
 
+        self._io_handler.start()
+
     @property
     def memory(self):
         return self._memory
@@ -69,6 +71,10 @@ class VirtualMachine(IVirtualMachine):
     @property
     def process_manager(self):
         return self._process_manager
+
+    @property
+    def io_handler(self):
+        return self._io_handler
 
     def load_from_file(self, file: Path):
         with open(file, 'r') as f:

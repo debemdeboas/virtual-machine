@@ -1,12 +1,13 @@
 from typing import List
+from enum import Enum
 
+ProcessState = Enum('ProcessState', 'READY RUNNING BLOCKED ENDED')
 
 class Process:
     def __init__(self, name, _id):
         self.name = name
         self.pid = _id
-        self.ready = False
-        self.running = False
+        self.state: ProcessState = ProcessState.READY
 
 
 class ProcessControlBlock(Process):
@@ -20,16 +21,18 @@ class ProcessControlBlock(Process):
         self.saved_pc_value = 0
         self.saved_register_values = {}
 
-    def suspend(self, pc, registers, should_increment_pc):
-        self.running = False
-        self.ready = False  # Only set ready to True on the end of this method
+    def suspend(self, pc, registers, should_increment_pc, blocked = False):
         if should_increment_pc:
             self.saved_pc_value = pc.value + 1
         else:
             self.saved_pc_value = pc.value
         for register in registers.items():
             self.saved_register_values[register[0]] = register[1].value
-        self.ready = True
+
+        if blocked:
+            self.state = ProcessState.BLOCKED
+        else:
+            self.state = ProcessState.READY
 
     def resume(self, pc, registers):
         pc.value = self.saved_pc_value
@@ -37,8 +40,7 @@ class ProcessControlBlock(Process):
             register.value = 0
         for register in self.saved_register_values.items():
             registers[register[0]].value = register[1]
-        self.running = True
-        self.ready = True
+        self.state = ProcessState.RUNNING
 
     def dump(self) -> List[str]:
         return [

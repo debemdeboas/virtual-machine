@@ -1,3 +1,4 @@
+from source.memory.process import ProcessControlBlock
 from threading import Thread
 from queue import Queue
 from typing import Any, Callable, Dict, List, NamedTuple
@@ -5,10 +6,15 @@ from source.command.command import EIOOperationComplete
 
 
 class IORequest(NamedTuple):
-    process_id: int
+    process: ProcessControlBlock
     request: Callable
-    args: List[Any]
-    kwargs: Dict[Any, Any]
+
+    def execute(self):
+        return self.request()
+
+
+class IOResponse(NamedTuple):
+    process_id: int
 
 
 class IOHandler(Thread):
@@ -21,5 +27,8 @@ class IOHandler(Thread):
     def run(self):
         while True:
             iorequest = self.queue.get()
-            iorequest.request(*iorequest.args, **iorequest.kwargs)
-            self.owner.cpu.queue_interrupt(EIOOperationComplete(iorequest.process_id))
+            iorequest.execute()
+            self.owner.cpu.queue_interrupt(EIOOperationComplete(IOResponse(iorequest.process.pid)))
+
+    def queue_operation(self, proc: ProcessControlBlock, request: Callable):
+        self.queue.put_nowait(IORequest(proc, request))

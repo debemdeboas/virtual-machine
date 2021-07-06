@@ -5,7 +5,7 @@ from queue import Queue
 
 from source.command.command import to_word, EInvalidAddress, EShutdown
 from source.memory.frame import Frame
-from source.memory.process import ProcessControlBlock
+from source.memory.process import ProcessControlBlock, ProcessState
 
 
 class IMemory(ABC):
@@ -149,29 +149,40 @@ class ProcessManager():
         self._pid_table: Dict[int, Any] = {}
         self._pid_gen = count(0)
         self.process_queue = Queue()
+        self.blocked_processes: Dict[int, ProcessControlBlock] = {}
 
         self.create_process('system', ['STOP'])
         self._curr_process = self._processes[0]
         self.process_queue.queue.clear()
 
 
-    def save(self, command, address):
+    def save(self, command, address, process = None):
+        if process:
+            proc = process
+        else:
+            proc = self._curr_process
+
         try:
-            self.relative_to_absolute_address(address)
+            self.relative_to_absolute_address(address, proc)
         except IndexError:  # Need to allocate more frames for this process
-            extra_words = ((address // self.owner.memory.page_size) - len(self._curr_process.frames)) * self.owner.memory.page_size + 1
-            new_frames = self.allocate(extra_words, self._curr_process.pid)
-            self._curr_process.frames.extend(new_frames)
-        absolute_address = self.relative_to_absolute_address(address)
+            extra_words = ((address // self.owner.memory.page_size) - len(proc.frames)) * self.owner.memory.page_size + 1
+            new_frames = self.allocate(extra_words, proc.pid)
+            proc.frames.extend(new_frames)
+        absolute_address = self.relative_to_absolute_address(address, proc)
         self.owner.memory.save(command, absolute_address)
 
 
-    def access(self, address):
-        # Address is a relative address for the current process
-        self._curr_process.current_frame = address // self.owner.memory.page_size
-        self._curr_process.current_offset = address % self.owner.memory.page_size
+    def access(self, address, process = None):
+        if process:
+            proc = process
+        else:
+            proc = self._curr_process
 
-        absolute_address = self.relative_to_absolute_address(address)
+        # Address is a relative address for the given process
+        proc.current_frame = address // self.owner.memory.page_size
+        proc.current_offset = address % self.owner.memory.page_size
+
+        absolute_address = self.relative_to_absolute_address(address, proc)
         return self.owner.memory.access(absolute_address)
 
 
@@ -181,8 +192,13 @@ class ProcessManager():
             if self.process_queue.qsize() > 0:
                 self.set_current_process(self.process_queue.get_nowait())
             else:
-                print('No more processes. Ending CPU loop.')
-                self.owner.cpu.queue_interrupt(EShutdown())
+                if len(self.blocked_processes) > 0:
+                    # Busy wait...
+                    self.create_process('system', ['STOP'])
+                    self.set_current_process(self.process_queue.get_nowait())
+                else:
+                    print('No more processes. Ending CPU loop.')
+                    self.owner.cpu.queue_interrupt(EShutdown())
             print(f'Process {process.name} has exited the CPU')
             print(f'Process {self._curr_process.name} has entered the CPU')
         except Exception as E:
@@ -195,17 +211,31 @@ class ProcessManager():
         self._curr_process.resume(self.owner.cpu.pc, self.owner.cpu.registers)
 
 
-    def cpu_schedule_next_process(self, should_increment_pc):
+    def cpu_schedule_next_process(self, should_increment_pc, blocked: bool = False):
         # Suspend the current process
         old_process = self._curr_process
-        old_process.suspend(self.owner.cpu.pc, self.owner.cpu.registers, should_increment_pc)
-        # Add suspended process to the CPU queue
-        self.process_queue.put(old_process)
+        old_process.suspend(self.owner.cpu.pc, self.owner.cpu.registers, should_increment_pc, blocked)
+
+        if blocked:
+            # Add process to blocked processes dictionary
+            self.blocked_processes[old_process.pid] = old_process
+        else:
+            # Add suspended process to the CPU queue
+            self.process_queue.put_nowait(old_process)
+
         # Choose the next process from the ready queue
         # Restore the CPU process of the next process
         self.schedule_next_process()
         # Give back control to the CPU
         return
+
+
+    def unblock_process(self, pid):
+        if proc := self.blocked_processes.get(pid):
+            if proc.state == ProcessState.BLOCKED:
+                self.blocked_processes.pop(pid)
+                self.process_queue.put_nowait(proc)
+                proc.state = ProcessState.READY
 
 
     def allocate(self, number_of_words, owner_pid):
@@ -230,10 +260,10 @@ class ProcessManager():
         return frames
 
 
-    def relative_to_absolute_address(self, address: int) -> int:
+    def relative_to_absolute_address(self, address: int, process) -> int:
         page = address // self.owner.memory.page_size
         offset = address % self.owner.memory.page_size
-        return (self._curr_process.frames[page].index * self.owner.memory.page_size) + offset
+        return (process.frames[page].index * self.owner.memory.page_size) + offset
 
 
     def create_process(self, process_name, code):
@@ -262,7 +292,7 @@ class ProcessManager():
         self._processes.append(process)
         self._pid_table[process.pid] = len(self._processes) - 1
         self.process_queue.put(process)
-        process.ready = True
+        process.state = ProcessState.READY
         return process.pid
 
 
@@ -272,6 +302,7 @@ class ProcessManager():
         print(f'Process {p_name} has ended')
         self.schedule_next_process()
         self.owner.memory.deallocate(process.frames)
+        process.state = ProcessState.ENDED
 
     def dump_list(self):
         process_begin = '-------------------------------- BEGIN PROCESS ---------------------------------\n'
@@ -287,3 +318,7 @@ class ProcessManager():
 
     def dump(self, file):
         file.writelines(self.dump_list())
+
+    @property
+    def current_process(self):
+        return self._curr_process
