@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from queue import Queue
 
-from source.command.command import ETrap, EProgramEnd, EShutdown, ESignalVirtualAlarm
+from source.command.command import EIOOperationComplete, ETrap, EProgramEnd, EShutdown, ESignalVirtualAlarm
 from source.register.register import Register
 
 
@@ -90,7 +90,18 @@ class Cpu(ICpu):
             while self.__interruption_queue.qsize() > 0:
                 interrupt = self.__interruption_queue.get_nowait()
                 if isinstance(interrupt, ETrap):  # Software interruption triggered by the user program
-                    interrupt.args[0]()  # Handle the interruption
+                    self.owner.io_handler.queue_operation(self.owner.process_manager.current_process, interrupt.args[0])
+
+                    # Give way to another process
+                    self.owner.process_manager.cpu_schedule_next_process(self.pc.value == _curr_address, blocked=True)
+                    self.current_process_instruction_count = 0
+                    skip_pc_increment = True
+
+                    continue
+                elif isinstance(interrupt, EIOOperationComplete):  # An IO request has been fulfilled
+                    response = interrupt.args[0]
+                    self.owner.process_manager.unblock_process(response.process_id)
+
                     continue
                 elif isinstance(interrupt, EProgramEnd):  # STOP instruction
                     print('STOP received. Ending process.')

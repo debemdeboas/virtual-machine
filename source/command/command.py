@@ -96,6 +96,17 @@ class ESignalVirtualAlarm(Exception):
     pass
 
 
+class EIOOperationComplete(Exception): 
+    """
+    Signals the CPU that a process has finished an IO operation
+
+    This interruption is thrown to the CPU by the IO handler after a process has completed an IO operation.
+
+    Sets the process that completed the operation as 'ready'.
+    """
+    pass
+
+
 class BaseCommand(IBaseCommand):
     """
     Base Command class
@@ -682,7 +693,7 @@ class Command_TRAP(BaseCommand):
         # In a real system, this TRAP would call the keyboard driver
         word = input()
         try:
-            self.process_manager.save(to_word(f'DATA {int(word)}'), self.r2.value)
+            self.process_manager.save(to_word(f'DATA {int(word)}'), self.proc.saved_register_values['r9'], self.proc)
         except (EInvalidAddress, EInvalidCommand) as E:
             self.interrupt(E)
 
@@ -693,18 +704,19 @@ class Command_TRAP(BaseCommand):
          `printf("%d", *R8)` (not `R8` because it is a pointer to an address)
         """
 
-        word = self.process_manager.access(self.r2.value)
+        word = self.process_manager.access(self.proc.saved_register_values['r9'], self.proc)
         if isinstance(word.command, Command_DATA):
             # In a real system, this TRAP would call the graphics card driver
             print(word.command.execute())
         else:
-            self.interrupt(EInvalidCommand(f'Address {self.r2.value} does not contain any DATA'))
+            self.interrupt(EInvalidCommand(f'Address {self.proc.saved_register_values["r9"]} does not contain any DATA'))
 
     def execute(self):
         self.func = {
             1: self._sys_call_in,
             2: self._sys_call_out,
         }[self.r1.value]
+        self.proc = self.process_manager.current_process
         self.interrupt(ETrap(self.func))
 
 
