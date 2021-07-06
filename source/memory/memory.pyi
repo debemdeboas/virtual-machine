@@ -38,6 +38,8 @@ class Memory(IMemory):
 
 
 class IMemoryManager(IMemory):
+    _inner_memory: List[IWord]
+
     @abstractmethod
     def allocate(self, number_of_words: int, owner_pid: int) -> List[Frame]: ...
 
@@ -48,6 +50,18 @@ class IMemoryManager(IMemory):
     @property
     @abstractmethod
     def page_size(self) -> int: ...
+
+    @property
+    @abstractmethod
+    def frame_amount(self) -> int: ...
+
+    @property
+    @abstractmethod
+    def frames(self): ...
+
+    @staticmethod
+    @abstractmethod
+    def zero_memory_in_frame(frame): ...
 
 
 class MemoryManager(IMemoryManager, Memory):

@@ -8,6 +8,7 @@ from pyfiglet import figlet_format
 
 from source.cpu.cpu import Cpu
 from source.memory.memory import MemoryManager, ProcessManager
+from source.vm.io_handler import IOHandler
 
 
 class IVirtualMachine(ABC, threading.Thread):
@@ -50,6 +51,7 @@ class VirtualMachine(IVirtualMachine):
         self._cpu = Cpu(self)
         self._memory = MemoryManager(self, mem_size, 16)
         self._process_manager = ProcessManager(self)
+        self._io_handler = IOHandler(self)
         self.tk = tk
         if self.tk is not None:
             self.tk.tag_configure('current_command', background='misty rose')

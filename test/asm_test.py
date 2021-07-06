@@ -144,8 +144,8 @@ class AssemblyTest(unittest.TestCase):
         import random
 
         # Pollute the memory
-        for i in random.sample(range(1, self.vm.memory._frame_amount), self.vm.memory._frame_amount // 2):
-            frame = self.vm.memory._frames[i]
+        for i in random.sample(range(1, self.vm.memory.frame_amount), self.vm.memory.frame_amount // 2):
+            frame = self.vm.memory.frames[i]
             frame.is_free = False
             frame.owner = random.randint(10, 200)
 
@@ -154,7 +154,7 @@ class AssemblyTest(unittest.TestCase):
         #  Load the same program twice
         p3_2_pid = self.vm.load_from_file(Path(self.path + 'example_programs/p3.asm'))
 
-        def nothing(s):
+        def nothing(*args):
             pass
 
         # Don't dealloc() frames, don't zero the memory on alloc()

@@ -124,6 +124,12 @@ class MemoryManager(Memory):
     @property
     def page_size(self): return self._page_size
 
+    @property
+    def frame_amount(self): return self._frame_amount
+
+    @property
+    def frames(self): return self._frames
+
     def dump_list(self):
         memory_data = ['---- MEMORY DATA ----\n', '[ ADDRESS ][ FRAME INDEX ][ FRAME OWNER ] ORIGINAL COMMAND | '
                                                   'COMMAND\n']
@@ -136,18 +142,6 @@ class MemoryManager(Memory):
         return memory_data
 
 class ProcessManager():
-    # deveres:
-    # criaçao de processo
-    #   solicita memoria,
-    #   carrega imagem processo,
-    #   cria pcb,
-    #   coloca na fila de prontos
-    #   se não ha processo rodando,
-    #   libera o escalonador
-    # finalizacao de processos
-    #   desaloca pcb, memoria
-    #   retira de filas
-
     def __init__(self, owner) -> None:
         self.owner = owner
 

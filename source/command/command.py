@@ -96,6 +96,17 @@ class ESignalVirtualAlarm(Exception):
     pass
 
 
+class EIOOperationComplete(Exception): 
+    """
+    Signals the CPU that a process has finished an IO operation
+
+    This interruption is thrown to the CPU by the IO handler after a process has completed an IO operation.
+
+    Sets the process that completed the operation as 'ready'.
+    """
+    pass
+
+
 class BaseCommand(IBaseCommand):
     """
     Base Command class
