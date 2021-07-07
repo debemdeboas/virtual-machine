@@ -7,6 +7,9 @@ from source.command.command import to_word, EInvalidAddress, EShutdown
 from source.memory.frame import Frame
 from source.memory.process import ProcessControlBlock, ProcessState
 
+import logging
+
+logging.basicConfig(level=logging.WARN)
 
 class IMemory(ABC):
     @abstractmethod
@@ -197,12 +200,12 @@ class ProcessManager():
                     self.create_process('system', ['STOP'])
                     self.set_current_process(self.process_queue.get_nowait())
                 else:
-                    print('No more processes. Ending CPU loop.')
+                    logging.info('No more processes. Ending CPU loop.')
                     self.owner.cpu.queue_interrupt(EShutdown())
-            print(f'Process {process.name} has exited the CPU')
-            print(f'Process {self._curr_process.name} has entered the CPU')
+            logging.info(f'Process {process.name} has exited the CPU')
+            logging.info(f'Process {self._curr_process.name} has entered the CPU')
         except Exception as E:
-            print('A fatal exception has occurred. Ending CPU loop.')
+            logging.fatal('A fatal exception has occurred. Ending CPU loop.')
             self.owner.cpu.queue_interrupt(EShutdown(str(E)))
 
 
@@ -249,7 +252,7 @@ class ProcessManager():
             frames = [self.owner.memory.get_next_free_frame() for _ in range(needed_frames)]
         except Exception as E:
             # There is not enough memory to allocate this process
-            print(E)
+            logging.fatal(E)
             return
 
         # Zero the memory
@@ -299,7 +302,7 @@ class ProcessManager():
     def end_current_process(self):
         process = self._curr_process
         p_name = process.name
-        print(f'Process {p_name} has ended')
+        logging.info(f'Process {p_name} has ended')
         self.schedule_next_process()
         self.owner.memory.deallocate(process.frames)
         process.state = ProcessState.ENDED

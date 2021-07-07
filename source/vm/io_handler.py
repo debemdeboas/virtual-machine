@@ -1,7 +1,7 @@
 from source.memory.process import ProcessControlBlock
 from threading import Thread
 from queue import Queue
-from typing import Any, Callable, Dict, List, NamedTuple
+from typing import Callable, NamedTuple
 from source.command.command import EIOOperationComplete
 
 
