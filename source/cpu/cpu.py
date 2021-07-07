@@ -4,6 +4,9 @@ from queue import Queue
 from source.command.command import EIOOperationComplete, ETrap, EProgramEnd, EShutdown, ESignalVirtualAlarm
 from source.register.register import Register
 
+import logging
+
+logging.basicConfig(level=logging.WARN)
 
 class ICpu(ABC):
     @property
@@ -61,7 +64,7 @@ class Cpu(ICpu):
 
     def loop(self):
         end_loop = False
-        print('CPU: Start loop')
+        logging.info('CPU: Start loop')
         while True:
             # Default to False on every loop
             skip_pc_increment = False
@@ -104,7 +107,7 @@ class Cpu(ICpu):
 
                     continue
                 elif isinstance(interrupt, EProgramEnd):  # STOP instruction
-                    print('STOP received. Ending process.')
+                    logging.info('STOP received. Ending process.')
                     self.reset()
                     self.owner.process_manager.end_current_process()
                     # Process changing routine
@@ -112,7 +115,7 @@ class Cpu(ICpu):
                     continue
                 elif isinstance(interrupt, EShutdown):
                     self.pc.value = self.last_pc_value
-                    print('Shutting down...')
+                    logging.info('Shutting down...')
                 elif isinstance(interrupt, ESignalVirtualAlarm):
                     # Give way to another process
                     self.owner.process_manager.cpu_schedule_next_process(self.pc.value == _curr_address)
@@ -120,7 +123,7 @@ class Cpu(ICpu):
                     skip_pc_increment = True
                     continue
                 else:
-                    print(f'Error: {interrupt}')
+                    logging.error(f'Error: {interrupt}')
 
                 # Some other exception (interruption) occurred, end the program execution
                 with self.__interruption_queue.mutex:  # Guarantee thread-safety
@@ -133,7 +136,7 @@ class Cpu(ICpu):
 
             if (not skip_pc_increment) and (self.pc.value == _curr_address):
                 self.pc.value += 1
-        print('CPU: End')
+        logging.info('CPU: End')
 
     def dump(self, file):
         file.writelines(self.dump_list())

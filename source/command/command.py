@@ -691,7 +691,7 @@ class Command_TRAP(BaseCommand):
         """
 
         # In a real system, this TRAP would call the keyboard driver
-        word = input()
+        word = input(f'PROCESS {self.proc.pid} INPUT: ')
         try:
             self.process_manager.save(to_word(f'DATA {int(word)}'), self.proc.saved_register_values['r9'], self.proc)
         except (EInvalidAddress, EInvalidCommand) as E:
@@ -707,7 +707,7 @@ class Command_TRAP(BaseCommand):
         word = self.process_manager.access(self.proc.saved_register_values['r9'], self.proc)
         if isinstance(word.command, Command_DATA):
             # In a real system, this TRAP would call the graphics card driver
-            print(word.command.execute())
+            print(f'PROCESS {self.proc.pid} OUTPUT: {word.command.execute()}')
         else:
             self.interrupt(EInvalidCommand(f'Address {self.proc.saved_register_values["r9"]} does not contain any DATA'))
 

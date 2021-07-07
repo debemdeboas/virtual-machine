@@ -1,7 +1,7 @@
+from time import sleep
 import unittest
 from pathlib import Path
 
-import mock
 from fibonacci import fibonacci
 from mock import patch
 from parameterized import parameterized
@@ -11,8 +11,12 @@ from source.vm.virtual_machine import VirtualMachine
 
 class AssemblyTest(unittest.TestCase):
     def setUp(self) -> None:
-        self.vm = VirtualMachine(mem_size=4096)
+        self.vm = VirtualMachine(mem_size=4096, create_shell_sock=True)
         self.path = ''
+
+    def tearDown(self) -> None:
+        self.vm.end_threads = True
+        return super().tearDown()
 
     def test_fibonacci(self):
         """
@@ -226,6 +230,26 @@ class AssemblyTest(unittest.TestCase):
             result = last_frame.addresses[2].command.execute()
             self.assertIn(result, results)
             results.remove(result)
+
+    def test_load_program_from_socket(self):
+        from source.user.shell import CommandHandler
+        import socket
+
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect(('localhost', 8899))
+        except Exception as E:
+            self.fail(f'Could not connect to socket server. {E}')
+
+        handler = CommandHandler(sock)
+
+        progs = ['p2.asm', 'p2.asm', 'p3.asm']
+
+        for prog in progs:
+            command, _, *args = f'load example_programs/{prog}'.partition(' ')
+            handler.handle(command, args)
+
+        self.assertEqual(len(progs) + 1, len(self.vm.process_manager._processes))
 
 
 if __name__ == '__main__':
