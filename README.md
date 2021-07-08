@@ -3,6 +3,7 @@
 A RISC-like (**R**educed **I**nstruction **S**et **C**omputer) emulator that runs a simple Assembly-like machine language.
 
 Commit message emoji meanings can be found [here](https://gist.github.com/parmentf/035de27d6ed1dce0b36a).
+This repository's URL can be found [here](https://github.com/debemdeboas/virtual-machine).
 
 ## Contributors
 
@@ -21,6 +22,9 @@ This project was implemented with scalability and ease of use in mind. Adding an
 requires very little knowledge of the system as a whole. Since mutable objects were used, some confusion might arise.
 However, they were treated similarly to C++'s pointers, so programmers with low-level language knowledge should feel
 right at home.
+
+Since the sixth release of this system, the VM supports simple concurrent mechanisms such as blocking processes that are waiting for an IO operation using an IO handler thread.
+On the seventh release of the system, a simple shell socket was added to concurrently load new processes into the memory or to shutdown the system.
 
 ### Solution
 
@@ -74,13 +78,15 @@ command has ended. The interruption classes are as follows:
 
 | Exception             | Meaning |
 |:---------------------:|----|
-|`ETrap`                | A trap has been set by the user program |
 |`EInvalidCommand`      | An invalid command string has been inputted |
+|`ETrap`                | A trap has been set by the user program |
 |`EInvalidAddress`      | There was an attempt to access an illegal memory area |
 |`EProgramEnd`          | A `STOP` command was issued |
 |`EMathOverflowError`   | An overflow has occurred |
 |`EShutdown`            | End the CPU loop, no more processes are available |
 |`ESignalVirtualAlarm`  | SIGVTALRM clock interruption |
+|`EIOOperationComplete` | An IO request has been fulfilled
+
 
 
 ## Usage
@@ -109,7 +115,56 @@ python3 main.py foo.asm
 This will load the program `foo.asm` into the virtual memory and evaluate the program execution step by step.
 
 ~~If you do not wish to see the step-by-step evaluation of the program, open `main.py` and remove the `#` (comment) sign
-from `text = None`. This will stop Tkinter from opening.~~ The Tkinter interface will be removed in a future release.
+from `text = None`. This will stop Tkinter from opening.~~ ~~The Tkinter interface will be removed in a future release.~~ The Tkinter interface has been removed.
+
+### Shell
+
+This VM interacts with a so-called DeBem Shell or DBSH, for short.
+
+The shell (client) will try to connect to `localhost:8899` via binary socket to communicate with the VM (server), which has bound that address and port upon creation.
+
+Running the shell is as simple as:
+
+```commandline
+python3 source/user/shell.py
+```
+
+After running the command and assuming the connection was successful, you will be greeted by a welcome dialog:
+
+```
+88888888ba,   88888888ba   ad88888ba  88        88
+88      `"8b  88      "8b d8"     "8b 88        88
+88        `8b 88      ,8P Y8,         88        88
+88         88 88aaaaaa8P' `Y8aaaaa,   88aaaaaaaa88
+88         88 88""""""8b,   `"""""8b, 88""""""""88
+88         8P 88      `8b         `8b 88        88
+88      .a8P  88      a8P Y8a     a8P 88        88
+88888888Y"'   88888888P"   "Y88888P"  88        88
+
+
+
+        Welcome to DBSH - DeBem Shell
+        Type 'help' to get started
+$
+```
+
+Then you can interact with the interface with the keyboard as you would a normal shell.
+The DBSH is very bare-bones, and you can list all of the available commands by entering `help`.
+
+If you type `help` followed by a command, the shell will print out that command's documentation.
+
+#### Examples
+
+To load a program into the memory, enter the following:
+
+```commandline
+$ load example_programs/p2.asm
+```
+
+The program will then be loaded onto the memory of the VM and will be added to the process queue.
+The PID of the new process will also be printed to the screen.
+
+Playing around in the shell is also encouraged.
 
 ## Tests
 
