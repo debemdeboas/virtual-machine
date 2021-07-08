@@ -8,11 +8,24 @@ class CommandHandler:
         self.sock = sock
 
         self._funcs: Dict[str, Callable] = {
-            'sh': self.handle,
             'help': self.help,
             'shutdown': self.shutdown,
-            'load': self.load_program
+            'load': self.load_program,
+            'echo': self.echo,
+            'exit': lambda _: exit(0),
         }
+
+    def echo(self, *args):
+        """
+        Echo? Echo
+
+        Prints the passed parameter to the console.
+        """
+
+        msg: str = args[0][0][0]
+        print(msg)
+        if msg.lower().strip() == 'hello there':
+            print('[General Grievous]: General Kenobi!')
 
     def help(self, *args):
         """
@@ -22,12 +35,17 @@ class CommandHandler:
         If an argument is given, get that command's documentation.
         """
 
-        if args[0][0] != ['']:
-            if func := self._funcs.get(args[0][0][0]):
-                print(func.__doc__.replace('            ', ''))
-        else:
-            print('Available commands:')
-            [print(f'\t{name}') for name in self._funcs]
+        try:
+            if args[0][0] != ['']:
+                if func := self._funcs.get(args[0][0][0]):
+                    print(func.__doc__.replace('            ', ''))
+                else:
+                    print('Unknown command')
+            else:
+                print('Available commands:')
+                [print(f'\t{name}') for name in self._funcs]
+        except:
+            print('Error! Could not get help for the requested command')
 
     def shutdown(self, *args):
         """
@@ -46,7 +64,14 @@ class CommandHandler:
             path (str): the program file path
         """
 
-        self.send(f'load {args[0][0][0]}')
+        file: str = args[0][0][0]
+
+        if not file or file.endswith('/') or file.endswith('\\') or \
+            not file.endswith('.asm'):
+            print('Invalid file')
+            return
+
+        self.send(f'load {file}')
 
     def handle(self, command: str, *args):
         """
@@ -64,7 +89,6 @@ class CommandHandler:
             print(f'An error has occurred. {E}')
 
     def send(self, *args):
-        # encoded_msg = str('%' + args[0] + '&').encode('ascii')
         encoded_msg = args[0].encode('ascii')
         self.sock.sendall(encoded_msg)
         print(self.sock.recv(4096).decode('ascii'))
@@ -74,13 +98,22 @@ if __name__ == '__main__':
     print(figlet_format('DBSH', font='univers'))
 
     try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock = socket.socket(
+            socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
         sock.connect(('localhost', 8899))
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
 
         handler = CommandHandler(sock)
         print('\tWelcome to DBSH - DeBem Shell\n\tType \'help\' to get started')
-        while True:
-            command, _, *args = input("$ ").partition(' ')
-            handler.handle(command, args)
+        try:
+            while True:
+                command, _, *args = input("$ ").partition(' ')
+
+                if not command:
+                    continue
+
+                handler.handle(command, args)
+        except KeyboardInterrupt:
+            handler.handle('exit')
     except ConnectionRefusedError:
         print('Could not connect to the server')

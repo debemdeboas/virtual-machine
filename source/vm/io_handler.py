@@ -10,7 +10,10 @@ class IORequest(NamedTuple):
     request: Callable
 
     def execute(self):
-        return self.request()
+        try:
+            return self.request()
+        except:
+            pass
 
 
 class IOResponse(NamedTuple):

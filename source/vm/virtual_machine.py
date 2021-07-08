@@ -79,12 +79,16 @@ class VirtualMachine(IVirtualMachine):
                     conn.sendall(ret.encode('ascii'))
                 except BlockingIOError:
                     continue
+                except socket.timeout:
+                    continue
             conn.close()
 
         def shell_sock(vm):
             try:
-                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
                 s.bind(('localhost', 8899))
+                s.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+
                 print('Shell socket bound')
                 s.listen()
                 s.setblocking(False)
@@ -121,13 +125,17 @@ class VirtualMachine(IVirtualMachine):
         return self._io_handler
 
     def load_from_file(self, file: Path, _print = True):
-        with open(file, 'r') as f:
-            lines = f.readlines()
-        # Close the file as soon as possible to free the disk
-        # Also use an auxiliary list to get its len()
-        pid = self._process_manager.create_process(file.name, lines)
-        if _print: print(f'Loaded process {file.name} into memory. PID: {pid}')
-        return pid
+        try:
+            with open(file, 'r') as f:
+                lines = f.readlines()
+            # Close the file as soon as possible to free the disk
+            # Also use an auxiliary list to get its len()
+            pid = self._process_manager.create_process(file.name, lines)
+            if _print: print(f'Loaded process {file.name} into memory. PID: {pid}')
+            return pid
+        except:
+            return -1
+
 
     def run(self):
         """
