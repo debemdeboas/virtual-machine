@@ -10,5 +10,5 @@ py==1.10.0
 py-fibonacci==0.5.2
 pyfiglet==0.8.post1
 pyparsing==2.4.7
-pytest==6.2.2
+pytest==9.0.3
 toml==0.10.2
